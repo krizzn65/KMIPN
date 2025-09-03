@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sensor;
 use Illuminate\Http\Request;
+use App\Helpers\QualityHelper;
 
 class DashboardController extends Controller
 {
@@ -43,14 +44,27 @@ class DashboardController extends Controller
 
         $warnings = [];
 
-        if ($latestData->ph < 7.5 || $latestData->ph > 8.5) {
-            $warnings[] = "⚠️ pH tidak normal! Saat ini: {$latestData->ph}";
+        // Check parameter status using new QualityHelper
+        $phStatus = QualityHelper::determineParameterStatus('ph', $latestData->ph);
+        $suhuStatus = QualityHelper::determineParameterStatus('suhu', $latestData->suhu);
+        $kekeruhanStatus = QualityHelper::determineParameterStatus('kekeruhan', $latestData->kekeruhan);
+
+        if ($phStatus['status'] === 'Danger') {
+            $warnings[] = "⚠️ {$phStatus['message']}";
+        } elseif ($phStatus['status'] === 'Warning') {
+            $warnings[] = "⚠️ {$phStatus['message']}";
         }
-        if ($latestData->suhu < 28 || $latestData->suhu > 32) {
-            $warnings[] = "🔥 Suhu ekstrem! Saat ini: {$latestData->suhu}°C";
+
+        if ($suhuStatus['status'] === 'Danger') {
+            $warnings[] = "🔥 {$suhuStatus['message']}";
+        } elseif ($suhuStatus['status'] === 'Warning') {
+            $warnings[] = "🔥 {$suhuStatus['message']}";
         }
-        if ($latestData->kekeruhan > 30) {
-            $warnings[] = "💧 Kekeruhan tinggi! Saat ini: {$latestData->kekeruhan} NTU";
+
+        if ($kekeruhanStatus['status'] === 'Danger') {
+            $warnings[] = "💧 {$kekeruhanStatus['message']}";
+        } elseif ($kekeruhanStatus['status'] === 'Warning') {
+            $warnings[] = "💧 {$kekeruhanStatus['message']}";
         }
 
         return !empty($warnings)
@@ -67,19 +81,33 @@ class DashboardController extends Controller
         }
 
         $quality = $this->calculateFuzzyQuality($latest->ph, $latest->suhu, $latest->kekeruhan);
+        
+        // Get parameter statuses and overall status
+        $parameterStatuses = QualityHelper::getAllParameterStatuses($latest->ph, $latest->suhu, $latest->kekeruhan);
+        $overallStatus = QualityHelper::getOverallStatus($parameterStatuses);
+        
+        // Update sensor with quality and status information
         $latest->kualitas = $quality;
+        $latest->ph_status = $parameterStatuses['ph']['status'];
+        $latest->suhu_status = $parameterStatuses['suhu']['status'];
+        $latest->kekeruhan_status = $parameterStatuses['kekeruhan']['status'];
+        $latest->overall_status = $overallStatus['status'];
+        
         $saved = $latest->save();
 
         if (!$saved) {
             return response()->json(['status' => 'error', 'message' => 'Gagal menyimpan ke database.']);
         }
 
+        // Get overall status based on individual parameter statuses
+        $parameterStatuses = QualityHelper::getAllParameterStatuses($latest->ph, $latest->suhu, $latest->kekeruhan);
+        $overallStatus = QualityHelper::getOverallStatus($parameterStatuses);
+
         return response()->json([
-            'status' => $quality < 50 ? 'warning' : 'normal',
+            'status' => strtolower($overallStatus['status']),
             'quality' => round($quality, 2),
-            'messages' => $quality < 50
-                ? ['Kualitas air buruk. Segera cek kolam.']
-                : ['Kualitas air dalam kondisi baik.']
+            'messages' => [$overallStatus['message']],
+            'parameter_statuses' => $parameterStatuses
         ]);
     }
 

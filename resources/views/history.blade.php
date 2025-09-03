@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('content')
@@ -5,187 +6,73 @@
     <!-- Header -->
     <div class="history-header">
         <h1 class="history-title">Historical Records</h1>
-        <p class="history-subtitle">Review past water quality measurements and trends over time</p>
+        <p class="history-subtitle">Review past water quality measurements and parameter statuses</p>
     </div>
     
     <!-- Filter Controls -->
     <div class="filter-controls">
-        <button class="filter-btn active">Today</button>
-        <button class="filter-btn">Last 7 Days</button>
-        <button class="filter-btn">Last 30 Days</button>
-        <button class="filter-btn">Custom Range</button>
+        <div class="filter-group">
+            <label class="filter-label">Time Range:</label>
+            <select class="filter-select" id="time-range">
+                <option value="today">Today</option>
+                <option value="7days">Last 7 Days</option>
+                <option value="30days">Last 30 Days</option>
+                <option value="all">All Time</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">Parameter:</label>
+            <select class="filter-select" id="parameter-filter">
+                <option value="all">All Parameters</option>
+                <option value="ph">pH Level</option>
+                <option value="suhu">Temperature</option>
+                <option value="kekeruhan">Turbidity</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">Status:</label>
+            <select class="filter-select" id="status-filter">
+                <option value="all">All Statuses</option>
+                <option value="Normal">Normal</option>
+                <option value="Warning">Warning</option>
+                <option value="Danger">Danger</option>
+            </select>
+        </div>
+        
+        <button class="btn btn-primary" id="apply-filters">
+            <i class="fas fa-filter"></i>
+            Apply Filters
+        </button>
+        
+        <button class="btn btn-outline" id="export-data">
+            <i class="fas fa-download"></i>
+            Export CSV
+        </button>
+    </div>
+    
+    <!-- Loading Indicator -->
+    <div class="loading-container" id="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading historical data...</p>
     </div>
     
     <!-- Historical Records Grid -->
-    <div class="history-grid">
-        <!-- Sample Record 1 -->
-        <div class="card history-card">
-            <div class="card-header">
-                <span class="card-date">September 2, 2025</span>
-                <span class="card-time">14:30:45</span>
-            </div>
-            
-            <div class="parameter-grid">
-                <div class="parameter-item">
-                    <div class="parameter-value ph-value">7.2</div>
-                    <div class="parameter-label">pH Level</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value temp-value">28.5°C</div>
-                    <div class="parameter-label">Temperature</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value turbidity-value">15.2 NTU</div>
-                    <div class="parameter-label">Turbidity</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value">0.5 mS/cm</div>
-                    <div class="parameter-label">Conductivity</div>
-                </div>
-            </div>
-            
-            <div class="quality-score">
-                <div class="quality-value">85%</div>
-                <div class="quality-label">Water Quality Score</div>
-            </div>
-            
-            <div class="status-badge status-success">
-                <i class="fas fa-check-circle"></i>
-                Good Quality
-            </div>
-        </div>
-        
-        <!-- Sample Record 2 -->
-        <div class="card history-card">
-            <div class="card-header">
-                <span class="card-date">September 2, 2025</span>
-                <span class="card-time">13:15:22</span>
-            </div>
-            
-            <div class="parameter-grid">
-                <div class="parameter-item">
-                    <div class="parameter-value ph-value">7.1</div>
-                    <div class="parameter-label">pH Level</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value temp-value">27.8°C</div>
-                    <div class="parameter-label">Temperature</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value turbidity-value">12.8 NTU</div>
-                    <div class="parameter-label">Turbidity</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value">0.4 mS/cm</div>
-                    <div class="parameter-label">Conductivity</div>
-                </div>
-            </div>
-            
-            <div class="quality-score">
-                <div class="quality-value">88%</div>
-                <div class="quality-label">Water Quality Score</div>
-            </div>
-            
-            <div class="status-badge status-success">
-                <i class="fas fa-check-circle"></i>
-                Excellent Quality
-            </div>
-        </div>
-        
-        <!-- Sample Record 3 -->
-        <div class="card history-card">
-            <div class="card-header">
-                <span class="card-date">September 2, 2025</span>
-                <span class="card-time">12:00:18</span>
-            </div>
-            
-            <div class="parameter-grid">
-                <div class="parameter-item">
-                    <div class="parameter-value ph-value">6.9</div>
-                    <div class="parameter-label">pH Level</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value temp-value">26.5°C</div>
-                    <div class="parameter-label">Temperature</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value turbidity-value">18.5 NTU</div>
-                    <div class="parameter-label">Turbidity</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value">0.6 mS/cm</div>
-                    <div class="parameter-label">Conductivity</div>
-                </div>
-            </div>
-            
-            <div class="quality-score">
-                <div class="quality-value">72%</div>
-                <div class="quality-label">Water Quality Score</div>
-            </div>
-            
-            <div class="status-badge status-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                Moderate Quality
-            </div>
-        </div>
-        
-        <!-- Sample Record 4 -->
-        <div class="card history-card">
-            <div class="card-header">
-                <span class="card-date">September 1, 2025</span>
-                <span class="card-time">16:45:33</span>
-            </div>
-            
-            <div class="parameter-grid">
-                <div class="parameter-item">
-                    <div class="parameter-value ph-value">7.4</div>
-                    <div class="parameter-label">pH Level</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value temp-value">29.2°C</div>
-                    <div class="parameter-label">Temperature</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value turbidity-value">9.8 NTU</div>
-                    <div class="parameter-label">Turbidity</div>
-                </div>
-                
-                <div class="parameter-item">
-                    <div class="parameter-value">0.3 mS/cm</div>
-                    <div class="parameter-label">Conductivity</div>
-                </div>
-            </div>
-            
-            <div class="quality-score">
-                <div class="quality-value">92%</div>
-                <div class="quality-label">Water Quality Score</div>
-            </div>
-            
-            <div class="status-badge status-success">
-                <i class="fas fa-check-circle"></i>
-                Excellent Quality
-            </div>
-        </div>
+    <div class="history-grid" id="history-grid">
+        <!-- Data will be populated by JavaScript -->
+    </div>
+    
+    <!-- No Data Message -->
+    <div class="no-records" id="no-records" style="display: none;">
+        <i class="fas fa-database" style="font-size: 3rem; margin-bottom: var(--space-md);"></i>
+        <h3>No Records Found</h3>
+        <p>No historical data matches your current filters.</p>
     </div>
     
     <!-- Pagination -->
-    <div class="pagination">
-        <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+    <div class="pagination" id="pagination">
+        <!-- Pagination will be populated by JavaScript -->
     </div>
     
     <!-- Footer -->
@@ -201,7 +88,7 @@
     
     .history-header {
         text-align: center;
-        margin-bottom: var(--space-3xl);
+        margin-bottom: var(--space-2xl);
         animation: fadeIn 0.8s ease-out;
     }
     
@@ -219,34 +106,64 @@
         margin: 0 auto var(--space-lg);
     }
     
+    /* Filter Controls */
     .filter-controls {
-        display: flex;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: var(--space-md);
         margin-bottom: var(--space-2xl);
-        flex-wrap: wrap;
+        align-items: end;
     }
     
-    .filter-btn {
-        background: var(--surface-color);
-        border: 2px solid var(--border-color);
-        padding: var(--space-sm) var(--space-lg);
-        border-radius: var(--border-radius-md);
-        cursor: pointer;
-        transition: all 0.3s ease;
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+    
+    .filter-label {
+        font-size: 0.9rem;
         font-weight: var(--font-weight-medium);
+        color: var(--text-primary);
     }
     
-    .filter-btn:hover,
-    .filter-btn.active {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
+    .filter-select {
+        padding: var(--space-sm) var(--space-md);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius-md);
+        background: var(--card-color);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        color: var(--text-primary);
     }
     
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+    
+    /* Loading Container */
+    .loading-container {
+        text-align: center;
+        padding: var(--space-3xl);
+        color: var(--text-secondary);
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--accent-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto var(--space-md);
+    }
+    
+    /* History Grid */
     .history-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
         gap: var(--space-lg);
         margin-bottom: var(--space-3xl);
     }
@@ -257,7 +174,8 @@
     }
     
     .history-card:hover {
-        transform: translateY(-4px);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
     }
     
     .card-header {
@@ -265,6 +183,8 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: var(--space-md);
+        padding-bottom: var(--space-sm);
+        border-bottom: 1px solid var(--border-color);
     }
     
     .card-date {
@@ -281,7 +201,7 @@
     
     .parameter-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: var(--space-md);
         margin-bottom: var(--space-lg);
     }
@@ -289,8 +209,10 @@
     .parameter-item {
         text-align: center;
         padding: var(--space-md);
-        background: rgba(236, 240, 241, 0.3);
+        background: var(--card-color);
         border-radius: var(--border-radius-md);
+        position: relative;
+        border: 1px solid var(--border-color);
     }
     
     .parameter-value {
@@ -302,14 +224,39 @@
     .parameter-label {
         font-size: 0.85rem;
         color: var(--text-secondary);
+        margin-bottom: var(--space-xs);
+    }
+    
+    .parameter-status {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+        display: inline-block;
+        font-weight: var(--font-weight-medium);
+    }
+    
+    .status-normal {
+        background: rgba(39, 174, 96, 0.1);
+        color: var(--success-color);
+    }
+    
+    .status-warning {
+        background: rgba(243, 156, 18, 0.1);
+        color: var(--warning-color);
+    }
+    
+    .status-danger {
+        background: rgba(231, 76, 60, 0.1);
+        color: var(--danger-color);
     }
     
     .quality-score {
         text-align: center;
         padding: var(--space-md);
-        background: rgba(39, 174, 96, 0.1);
+        background: var(--card-color);
         border-radius: var(--border-radius-md);
         margin-bottom: var(--space-md);
+        border: 1px solid var(--border-color);
     }
     
     .quality-value {
@@ -323,6 +270,28 @@
         color: var(--text-secondary);
     }
     
+    .overall-status {
+        text-align: center;
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--border-radius-md);
+        font-weight: var(--font-weight-medium);
+        margin-top: var(--space-md);
+    }
+    
+    /* Color variations for parameter values */
+    .ph-value { color: #3498DB; }
+    .temp-value { color: #27AE60; }
+    .turbidity-value { color: #F39C12; }
+    
+    /* No Records */
+    .no-records {
+        text-align: center;
+        color: var(--text-secondary);
+        padding: var(--space-3xl);
+        font-style: italic;
+    }
+    
+    /* Pagination */
     .pagination {
         display: flex;
         justify-content: center;
@@ -335,9 +304,11 @@
         padding: var(--space-sm) var(--space-md);
         border: 2px solid var(--border-color);
         border-radius: var(--border-radius-md);
-        background: var(--surface-color);
+        background: var(--card-color);
         cursor: pointer;
         transition: all 0.3s ease;
+        font-size: 0.9rem;
+        color: var(--text-primary);
     }
     
     .page-btn:hover,
@@ -347,17 +318,10 @@
         border-color: var(--primary-color);
     }
     
-    .no-records {
-        text-align: center;
-        color: var(--text-secondary);
-        padding: var(--space-3xl);
-        font-style: italic;
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
-    
-    /* Color variations for parameter values */
-    .ph-value { color: #3498DB; }
-    .temp-value { color: #27AE60; }
-    .turbidity-value { color: #F39C12; }
     
     @media (max-width: 768px) {
         .history-grid {
@@ -369,52 +333,298 @@
             font-size: 2rem;
         }
         
+        .filter-controls {
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+        
         .parameter-grid {
             grid-template-columns: 1fr;
         }
         
-        .filter-controls {
+        .card-header {
             flex-direction: column;
-            align-items: center;
-        }
-        
-        .filter-btn {
-            width: 200px;
+            align-items: flex-start;
+            gap: var(--space-xs);
         }
     }
 </style>
 
 <script>
-    // Filter functionality
+    let currentPage = 1;
+    const itemsPerPage = 6;
+    let allData = [];
+    let filteredData = [];
+
+    // Initialize everything
     document.addEventListener('DOMContentLoaded', function() {
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const pageBtns = document.querySelectorAll('.page-btn');
+        loadHistoryData();
+        setupEventListeners();
+    });
+
+    // Setup event listeners
+    function setupEventListeners() {
+        document.getElementById('apply-filters').addEventListener('click', applyFilters);
+        document.getElementById('export-data').addEventListener('click', exportToCSV);
         
-        // Filter button click handler
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Simulate loading new data
-                simulateFilterChange(this.textContent.trim());
-            });
-        });
-        
-        // Pagination button click handler
-        pageBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (!this.querySelector('i')) { // Don't change for arrow buttons
-                    pageBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
+        // Add enter key support for filters
+        const filterInputs = document.querySelectorAll('.filter-select');
+        filterInputs.forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
                 }
             });
         });
+    }
+
+    // Load history data
+    async function loadHistoryData() {
+        showLoading(true);
         
-        function simulateFilterChange(filter) {
-            console.log('Filter changed to:', filter);
-            // In a real application, this would fetch new data from the server
+        try {
+            const response = await fetch('/history/data');
+            const data = await response.json();
+            
+            allData = data;
+            applyFilters();
+        } catch (error) {
+            console.error('Error loading history data:', error);
+            showError('Failed to load historical data');
+        } finally {
+            showLoading(false);
         }
-    });
+    }
+
+    // Apply filters
+    function applyFilters() {
+        const timeRange = document.getElementById('time-range').value;
+        const parameter = document.getElementById('parameter-filter').value;
+        const status = document.getElementById('status-filter').value;
+        
+        filteredData = allData.filter(item => {
+            // Time range filter
+            if (timeRange !== 'all') {
+                const itemDate = new Date(item.created_at);
+                const now = new Date();
+                const timeDiff = now - itemDate;
+                
+                switch (timeRange) {
+                    case 'today':
+                        if (!isToday(itemDate)) return false;
+                        break;
+                    case '7days':
+                        if (timeDiff > 7 * 24 * 60 * 60 * 1000) return false;
+                        break;
+                    case '30days':
+                        if (timeDiff > 30 * 24 * 60 * 60 * 1000) return false;
+                        break;
+                }
+            }
+            
+            // Status filter
+            if (status !== 'all' && item.status_kualitas_air !== status) {
+                return false;
+            }
+            
+            return true;
+        });
+        
+        currentPage = 1;
+        renderHistoryData();
+        renderPagination();
+    }
+
+    // Check if date is today
+    function isToday(date) {
+        const today = new Date();
+        return date.getDate() === today.getDate() &&
+               date.getMonth() === today.getMonth() &&
+               date.getFullYear() === today.getFullYear();
+    }
+
+    // Render history data
+    function renderHistoryData() {
+        const container = document.getElementById('history-grid');
+        const noRecords = document.getElementById('no-records');
+        
+        if (filteredData.length === 0) {
+            container.innerHTML = '';
+            noRecords.style.display = 'block';
+            return;
+        }
+        
+        noRecords.style.display = 'none';
+        
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageData = filteredData.slice(startIndex, endIndex);
+        
+        container.innerHTML = pageData.map(item => `
+            <div class="card history-card">
+                <div class="card-header">
+                    <span class="card-date">${item.created_at.split(',')[0]}</span>
+                    <span class="card-time">${item.created_at.split(',')[1]}</span>
+                </div>
+                
+                <div class="parameter-grid">
+                    <div class="parameter-item">
+                        <div class="parameter-value ph-value">${item.ph?.toFixed(1) || '--'}</div>
+                        <div class="parameter-label">pH Level</div>
+                        <span class="parameter-status status-${item.parameter_statuses?.ph?.status?.toLowerCase() || 'normal'}">
+                            ${item.parameter_statuses?.ph?.status || 'Normal'}
+                        </span>
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <div class="parameter-value temp-value">${item.suhu?.toFixed(1) || '--'}°C</div>
+                        <div class="parameter-label">Temperature</div>
+                        <span class="parameter-status status-${item.parameter_statuses?.suhu?.status?.toLowerCase() || 'normal'}">
+                            ${item.parameter_statuses?.suhu?.status || 'Normal'}
+                        </span>
+                    </div>
+                    
+                    <div class="parameter-item">
+                        <div class="parameter-value turbidity-value">${item.kekeruhan?.toFixed(1) || '--'} NTU</div>
+                        <div class="parameter-label">Turbidity</div>
+                        <span class="parameter-status status-${item.parameter_statuses?.kekeruhan?.status?.toLowerCase() || 'normal'}">
+                            ${item.parameter_statuses?.kekeruhan?.status || 'Normal'}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="quality-score">
+                    <div class="quality-value">${item.kualitas ? Math.round(item.kualitas) + '%' : '--%'}</div>
+                    <div class="quality-label">Water Quality Score</div>
+                </div>
+                
+                <div class="overall-status status-${item.status_kualitas_air?.toLowerCase() || 'normal'}">
+                    <i class="fas ${getStatusIcon(item.status_kualitas_air)}"></i>
+                    ${item.status_kualitas_air || 'Normal'} Quality
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Get status icon
+    function getStatusIcon(status) {
+        switch (status?.toLowerCase()) {
+            case 'danger': return 'fa-exclamation-triangle';
+            case 'warning': return 'fa-exclamation-circle';
+            case 'normal': return 'fa-check-circle';
+            default: return 'fa-question-circle';
+        }
+    }
+
+    // Render pagination
+    function renderPagination() {
+        const pagination = document.getElementById('pagination');
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        
+        if (totalPages <= 1) {
+            pagination.innerHTML = '';
+            return;
+        }
+        
+        let paginationHTML = `
+            <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        `;
+        
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHTML += `
+                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                    ${i}
+                </button>
+            `;
+        }
+        
+        paginationHTML += `
+            <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        `;
+        
+        pagination.innerHTML = paginationHTML;
+    }
+
+    // Change page
+    function changePage(page) {
+        const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        if (page < 1 || page > totalPages) return;
+        
+        currentPage = page;
+        renderHistoryData();
+        renderPagination();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Export to CSV
+    function exportToCSV() {
+        if (filteredData.length === 0) {
+            alert('No data to export');
+            return;
+        }
+        
+        const headers = ['Date', 'Time', 'pH', 'pH Status', 'Temperature', 'Temp Status', 'Turbidity', 'Turbidity Status', 'Quality Score', 'Overall Status'];
+        
+        const csvData = [
+            headers,
+            ...filteredData.map(item => {
+                const [date, time] = item.created_at.split(', ');
+                return [
+                    date,
+                    time,
+                    item.ph?.toFixed(1) || '',
+                    item.parameter_statuses?.ph?.status || '',
+                    item.suhu?.toFixed(1) || '',
+                    item.parameter_statuses?.suhu?.status || '',
+                    item.kekeruhan?.toFixed(1) || '',
+                    item.parameter_statuses?.kekeruhan?.status || '',
+                    item.kualitas ? Math.round(item.kualitas) + '%' : '',
+                    item.status_kualitas_air || ''
+                ];
+            })
+        ];
+        
+        const csvContent = csvData.map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', `aquamonitor-data-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Show/hide loading indicator
+    function showLoading(show) {
+        document.getElementById('loading-container').style.display = show ? 'block' : 'none';
+        document.getElementById('history-grid').style.display = show ? 'none' : 'grid';
+    }
+
+    // Show error message
+    function showError(message) {
+        const container = document.getElementById('history-grid');
+        container.innerHTML = `
+            <div class="card" style="grid-column: 1 / -1; text-align: center; color: var(--danger-color);">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: var(--space-md);"></i>
+                <h3>Error Loading Data</h3>
+                <p>${message}</p>
+                <button class="btn btn-primary" onclick="loadHistoryData()" style="margin-top: var(--space-md);">
+                    <i class="fas fa-refresh"></i>
+                    Try Again
+                </button>
+            </div>
+        `;
+    }
+
+    // Global functions for pagination
+    window.changePage = changePage;
 </script>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Sensor;
 use Carbon\Carbon;
+use App\Helpers\QualityHelper;
 
 class SensorController extends Controller
 {
@@ -52,13 +53,26 @@ class SensorController extends Controller
      */
     private function formatSensorData($data)
     {
+        $phStatus = QualityHelper::determineParameterStatus('ph', $data->ph);
+        $suhuStatus = QualityHelper::determineParameterStatus('suhu', $data->suhu);
+        $kekeruhanStatus = QualityHelper::determineParameterStatus('kekeruhan', $data->kekeruhan);
+        
+        $parameterStatuses = [
+            'ph' => $phStatus,
+            'suhu' => $suhuStatus,
+            'kekeruhan' => $kekeruhanStatus
+        ];
+        
+        $overallStatus = QualityHelper::getOverallStatus($parameterStatuses);
+
         return [
             'created_at' => Carbon::parse($data->created_at)->format('d M Y, H:i'),
             'ph' => $data->ph,
             'suhu' => $data->suhu,
             'kekeruhan' => $data->kekeruhan,
             'kualitas' => $data->kualitas,
-            'status_kualitas_air' => $this->determineWaterQualityStatus($data->kualitas)
+            'status_kualitas_air' => $overallStatus['status'],
+            'parameter_statuses' => $parameterStatuses
         ];
     }
 
@@ -86,9 +100,20 @@ class SensorController extends Controller
     {
         if ($request->filled('ph') && $request->ph !== 'all') {
             match ($request->ph) {
-                'acid' => $query->where('ph', '<', 7.5),
-                'neutral' => $query->whereBetween('ph', [7.5, 8.5]),
-                'base' => $query->where('ph', '>', 8.5),
+                'danger' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['ph'];
+                    $q->where('ph', '<', $thresholds['danger_low'])
+                      ->orWhere('ph', '>', $thresholds['danger_high']);
+                }),
+                'warning' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['ph'];
+                    $q->whereBetween('ph', [$thresholds['warning_low'], $thresholds['danger_low']])
+                      ->orWhereBetween('ph', [$thresholds['danger_high'], $thresholds['warning_high']]);
+                }),
+                'normal' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['ph'];
+                    $q->whereBetween('ph', [$thresholds['normal_low'], $thresholds['normal_high']]);
+                }),
                 default => null
             };
         }
@@ -101,9 +126,20 @@ class SensorController extends Controller
     {
         if ($request->filled('suhu') && $request->suhu !== 'all') {
             match ($request->suhu) {
-                'cold' => $query->where('suhu', '<', 28),
-                'optimal_suhu' => $query->whereBetween('suhu', [28, 32]),
-                'hot' => $query->where('suhu', '>', 32),
+                'danger' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['suhu'];
+                    $q->where('suhu', '<', $thresholds['danger_low'])
+                      ->orWhere('suhu', '>', $thresholds['danger_high']);
+                }),
+                'warning' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['suhu'];
+                    $q->whereBetween('suhu', [$thresholds['warning_low'], $thresholds['danger_low']])
+                      ->orWhereBetween('suhu', [$thresholds['danger_high'], $thresholds['warning_high']]);
+                }),
+                'normal' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['suhu'];
+                    $q->whereBetween('suhu', [$thresholds['normal_low'], $thresholds['normal_high']]);
+                }),
                 default => null
             };
         }
@@ -116,9 +152,18 @@ class SensorController extends Controller
     {
         if ($request->filled('kekeruhan') && $request->kekeruhan !== 'all') {
             match ($request->kekeruhan) {
-                'clear' => $query->where('kekeruhan', '<', 15),
-                'optimal_kekeruhan' => $query->whereBetween('kekeruhan', [15, 30]),
-                'turbid' => $query->where('kekeruhan', '>', 30),
+                'danger' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['kekeruhan'];
+                    $q->where('kekeruhan', '>', $thresholds['danger_low']);
+                }),
+                'warning' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['kekeruhan'];
+                    $q->whereBetween('kekeruhan', [$thresholds['warning_low'], $thresholds['danger_low']]);
+                }),
+                'normal' => $query->where(function($q) {
+                    $thresholds = QualityHelper::getThresholds()['kekeruhan'];
+                    $q->whereBetween('kekeruhan', [$thresholds['normal_low'], $thresholds['normal_high']]);
+                }),
                 default => null
             };
         }

@@ -59,29 +59,15 @@
             </ul>
         </div>
 
-        <div class="sidebar-divider"></div>
-
-        <!-- AI Section -->
-        <div class="sidebar-section">
-            <h3 class="section-title">AI</h3>
-            <ul class="sidebar-nav">
-                <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
-                        <i class="fas fa-brain"></i>
-                        <span>AI</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
 
         <!-- TOOL Section -->
         <div class="sidebar-section">
             <h3 class="section-title">TOOL</h3>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
+                    <a href="#" class="sidebar-link" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                        <span>Dark Mode</span>
                     </a>
                 </li>
             </ul>
@@ -95,12 +81,14 @@
         </div>
     </main>
 
-    <!-- JavaScript for sidebar toggle -->
+    <!-- JavaScript for sidebar toggle and theme switching -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
+            const themeToggle = document.getElementById('theme-toggle');
             
+            // Sidebar toggle functionality
             sidebarToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('open');
             });
@@ -112,6 +100,48 @@
                         sidebar.classList.remove('open');
                     }
                 }
+            });
+            
+            // Theme switching functionality
+            function initTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = savedTheme === 'auto' ? (prefersDark ? 'dark' : 'light') : savedTheme;
+                
+                document.documentElement.setAttribute('data-theme', theme);
+                updateThemeToggle(theme);
+            }
+            
+            function toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeToggle(newTheme);
+            }
+            
+            function updateThemeToggle(theme) {
+                const themeToggle = document.getElementById('theme-toggle');
+                const icon = themeToggle.querySelector('i');
+                const text = themeToggle.querySelector('span');
+                
+                if (theme === 'dark') {
+                    icon.className = 'fas fa-sun';
+                    text.textContent = 'Light Mode';
+                } else {
+                    icon.className = 'fas fa-moon';
+                    text.textContent = 'Dark Mode';
+                }
+            }
+            
+            // Initialize theme
+            initTheme();
+            
+            // Add click event to theme toggle
+            themeToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleTheme();
             });
         });
     </script>

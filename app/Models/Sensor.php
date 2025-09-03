@@ -11,6 +11,9 @@ class Sensor extends Model
 
     protected $table = 'sensors';
 
-    // Tambahkan 'kualitas' ke dalam fillable
-    protected $fillable = ['ph', 'suhu', 'salinitas', 'kekeruhan', 'kualitas'];
+    // Tambahkan 'kualitas' dan status fields ke dalam fillable
+    protected $fillable = [
+        'ph', 'suhu', 'kekeruhan', 'kualitas',
+        'ph_status', 'suhu_status', 'kekeruhan_status', 'overall_status'
+    ];
 }
