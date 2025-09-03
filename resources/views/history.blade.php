@@ -1,368 +1,420 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2 class="mb-4 text-center">Riwayat Kualitas Air</h2>
-
-    <!-- Toggle Filter for Mobile and export excel -->
-    <div class="row justify-content-between mb-3">
-    <div class="col-6 col-md-2 mb-2">
-        <button class="btn btn-outline-primary w-100 d-md-none" onclick="toggleFilter()">🔍 Filter</button>
+<div class="history-content">
+    <!-- Header -->
+    <div class="history-header">
+        <h1 class="history-title">Historical Records</h1>
+        <p class="history-subtitle">Review past water quality measurements and trends over time</p>
     </div>
-    <div class="col-6 col-md-2 mb-2 text-end">
-        <button class="btn btn-success w-100" onclick="exportTableToExcel()">⬇️ Export Excel</button>
+    
+    <!-- Filter Controls -->
+    <div class="filter-controls">
+        <button class="filter-btn active">Today</button>
+        <button class="filter-btn">Last 7 Days</button>
+        <button class="filter-btn">Last 30 Days</button>
+        <button class="filter-btn">Custom Range</button>
     </div>
+    
+    <!-- Historical Records Grid -->
+    <div class="history-grid">
+        <!-- Sample Record 1 -->
+        <div class="card history-card">
+            <div class="card-header">
+                <span class="card-date">September 2, 2025</span>
+                <span class="card-time">14:30:45</span>
+            </div>
+            
+            <div class="parameter-grid">
+                <div class="parameter-item">
+                    <div class="parameter-value ph-value">7.2</div>
+                    <div class="parameter-label">pH Level</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value temp-value">28.5°C</div>
+                    <div class="parameter-label">Temperature</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value turbidity-value">15.2 NTU</div>
+                    <div class="parameter-label">Turbidity</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value">0.5 mS/cm</div>
+                    <div class="parameter-label">Conductivity</div>
+                </div>
+            </div>
+            
+            <div class="quality-score">
+                <div class="quality-value">85%</div>
+                <div class="quality-label">Water Quality Score</div>
+            </div>
+            
+            <div class="status-badge status-success">
+                <i class="fas fa-check-circle"></i>
+                Good Quality
+            </div>
+        </div>
+        
+        <!-- Sample Record 2 -->
+        <div class="card history-card">
+            <div class="card-header">
+                <span class="card-date">September 2, 2025</span>
+                <span class="card-time">13:15:22</span>
+            </div>
+            
+            <div class="parameter-grid">
+                <div class="parameter-item">
+                    <div class="parameter-value ph-value">7.1</div>
+                    <div class="parameter-label">pH Level</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value temp-value">27.8°C</div>
+                    <div class="parameter-label">Temperature</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value turbidity-value">12.8 NTU</div>
+                    <div class="parameter-label">Turbidity</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value">0.4 mS/cm</div>
+                    <div class="parameter-label">Conductivity</div>
+                </div>
+            </div>
+            
+            <div class="quality-score">
+                <div class="quality-value">88%</div>
+                <div class="quality-label">Water Quality Score</div>
+            </div>
+            
+            <div class="status-badge status-success">
+                <i class="fas fa-check-circle"></i>
+                Excellent Quality
+            </div>
+        </div>
+        
+        <!-- Sample Record 3 -->
+        <div class="card history-card">
+            <div class="card-header">
+                <span class="card-date">September 2, 2025</span>
+                <span class="card-time">12:00:18</span>
+            </div>
+            
+            <div class="parameter-grid">
+                <div class="parameter-item">
+                    <div class="parameter-value ph-value">6.9</div>
+                    <div class="parameter-label">pH Level</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value temp-value">26.5°C</div>
+                    <div class="parameter-label">Temperature</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value turbidity-value">18.5 NTU</div>
+                    <div class="parameter-label">Turbidity</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value">0.6 mS/cm</div>
+                    <div class="parameter-label">Conductivity</div>
+                </div>
+            </div>
+            
+            <div class="quality-score">
+                <div class="quality-value">72%</div>
+                <div class="quality-label">Water Quality Score</div>
+            </div>
+            
+            <div class="status-badge status-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                Moderate Quality
+            </div>
+        </div>
+        
+        <!-- Sample Record 4 -->
+        <div class="card history-card">
+            <div class="card-header">
+                <span class="card-date">September 1, 2025</span>
+                <span class="card-time">16:45:33</span>
+            </div>
+            
+            <div class="parameter-grid">
+                <div class="parameter-item">
+                    <div class="parameter-value ph-value">7.4</div>
+                    <div class="parameter-label">pH Level</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value temp-value">29.2°C</div>
+                    <div class="parameter-label">Temperature</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value turbidity-value">9.8 NTU</div>
+                    <div class="parameter-label">Turbidity</div>
+                </div>
+                
+                <div class="parameter-item">
+                    <div class="parameter-value">0.3 mS/cm</div>
+                    <div class="parameter-label">Conductivity</div>
+                </div>
+            </div>
+            
+            <div class="quality-score">
+                <div class="quality-value">92%</div>
+                <div class="quality-label">Water Quality Score</div>
+            </div>
+            
+            <div class="status-badge status-success">
+                <i class="fas fa-check-circle"></i>
+                Excellent Quality
+            </div>
+        </div>
     </div>
-
-
-    <!-- Filter Data -->
-    <div id="filterSection" class="row mb-3">
-        <div class="col-md-3 mb-2">
-            <label for="start_date">Dari Tanggal:</label>
-            <input type="date" id="start_date" class="form-control">
-        </div>
-        <div class="col-md-3 mb-2">
-            <label for="end_date">Sampai Tanggal:</label>
-            <input type="date" id="end_date" class="form-control">
-        </div>
-        <div class="col-md-2 mb-2">
-            <label for="ph">pH:</label>
-            <select id="ph" class="form-control">
-                <option value="all">Semua</option>
-                <option value="acid">Asam (pH &lt; 7,5)</option>
-                <option value="neutral">Netral (7,5 ≤ pH ≤ 8,5)</option>
-                <option value="base">Basa (pH &gt; 8,5)</option>
-            </select>
-        </div>
-        <div class="col-md-2 mb-2">
-            <label for="suhu">Suhu (°C):</label>
-            <select id="suhu" class="form-control">
-                <option value="all">Semua</option>
-                <option value="cold">Dingin (T &lt; 28°C)</option>
-                <option value="optimal_suhu">Optimal (28 ≤ T ≤ 32°C)</option>
-                <option value="hot">Panas (T &gt; 32°C)</option>
-            </select>
-        </div>
-        <div class="col-md-2 mb-2">
-            <label for="kekeruhan">Kekeruhan (NTU):</label>
-            <select id="kekeruhan" class="form-control">
-                <option value="all">Semua</option>
-                <option value="clear">Jernih (NTU &lt; 15)</option>
-                <option value="optimal_kekeruhan">Optimal (15 ≤ NTU ≤ 30)</option>
-                <option value="turbid">Keruh (NTU &gt; 30)</option>
-            </select>
-        </div>
-        <div class="col-md-2 d-flex align-items-end mb-2">
-            <button class="btn btn-primary w-100" onclick="loadHistoryData()">Filter</button>
-        </div>
+    
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
     </div>
-
-    <!-- Tabel Riwayat -->
-    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-        <table class="table table-striped table-hover text-center" id="historyTable">
-           <thead id="dynamicTableHead">
-                <tr>
-                    <th>Tanggal & Waktu</th>
-                    <th>pH</th>
-                    <th>Suhu (°C)</th>
-                    <th>Kekeruhan (NTU)</th>
-                    <th>Kualitas Air</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody id="historyBody">
-                <!-- Data akan dimuat oleh AJAX -->
-            </tbody>
-        </table>
+    
+    <!-- Footer -->
+    <div class="dashboard-footer">
+        <p>&copy; 2025 AquaMonitor Water Quality System. Historical data analysis and monitoring.</p>
     </div>
 </div>
 
-{{-- Dynamic Theme Styling --}}
 <style>
-    [data-bs-theme="dark"] thead#dynamicTableHead {
-        background-color: #007F73;
-        color: #fff;
-        position: sticky;
-        top: 0;
-        z-index: 1;
+    .history-content {
+        padding: var(--space-xl) 0;
     }
-
-    [data-bs-theme="light"] thead#dynamicTableHead {
-        background-color: #00A9A4;
-        color: #fff;
-        position: sticky;
-        top: 0;
-        z-index: 1;
+    
+    .history-header {
+        text-align: center;
+        margin-bottom: var(--space-3xl);
+        animation: fadeIn 0.8s ease-out;
     }
-    .text-danger {
-        color: #dc3545 !important;
+    
+    .history-title {
+        font-size: 2.5rem;
+        font-weight: var(--font-weight-semibold);
+        color: var(--primary-color);
+        margin-bottom: var(--space-sm);
     }
-    .text-warning {
-        color: #ffc107 !important;
+    
+    .history-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto var(--space-lg);
     }
-    .text-success {
-        color: #28a745 !important;
+    
+    .filter-controls {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-md);
+        margin-bottom: var(--space-2xl);
+        flex-wrap: wrap;
     }
-
+    
+    .filter-btn {
+        background: var(--surface-color);
+        border: 2px solid var(--border-color);
+        padding: var(--space-sm) var(--space-lg);
+        border-radius: var(--border-radius-md);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: var(--font-weight-medium);
+    }
+    
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .history-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-3xl);
+    }
+    
+    .history-card {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .history-card:hover {
+        transform: translateY(-4px);
+    }
+    
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-md);
+    }
+    
+    .card-date {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-weight: var(--font-weight-medium);
+    }
+    
+    .card-time {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        opacity: 0.8;
+    }
+    
+    .parameter-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+    }
+    
+    .parameter-item {
+        text-align: center;
+        padding: var(--space-md);
+        background: rgba(236, 240, 241, 0.3);
+        border-radius: var(--border-radius-md);
+    }
+    
+    .parameter-value {
+        font-size: 1.2rem;
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--space-xs);
+    }
+    
+    .parameter-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+    
+    .quality-score {
+        text-align: center;
+        padding: var(--space-md);
+        background: rgba(39, 174, 96, 0.1);
+        border-radius: var(--border-radius-md);
+        margin-bottom: var(--space-md);
+    }
+    
+    .quality-value {
+        font-size: 1.5rem;
+        font-weight: var(--font-weight-semibold);
+        color: var(--success-color);
+    }
+    
+    .quality-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-sm);
+        margin-top: var(--space-2xl);
+        margin-bottom: var(--space-xl);
+    }
+    
+    .page-btn {
+        padding: var(--space-sm) var(--space-md);
+        border: 2px solid var(--border-color);
+        border-radius: var(--border-radius-md);
+        background: var(--surface-color);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .page-btn:hover,
+    .page-btn.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .no-records {
+        text-align: center;
+        color: var(--text-secondary);
+        padding: var(--space-3xl);
+        font-style: italic;
+    }
+    
+    /* Color variations for parameter values */
+    .ph-value { color: #3498DB; }
+    .temp-value { color: #27AE60; }
+    .turbidity-value { color: #F39C12; }
+    
+    @media (max-width: 768px) {
+        .history-grid {
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+        
+        .history-title {
+            font-size: 2rem;
+        }
+        
+        .parameter-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-controls {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .filter-btn {
+            width: 200px;
+        }
+    }
 </style>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-function toggleFilter() {
-    $("#filterSection").toggle();
-}
-
-function getPHColor(ph) {
-    if (ph < 7.5) return "text-danger";  // Asam
-    if (ph >= 7.5 && ph <= 8.5) return "text-success";  // Netral
-    return "text-primary";  // Basa
-}
-
-function getSuhuColor(suhu) {
-    if (suhu < 26) return "text-primary";  // Dingin
-    if (suhu >= 26 && suhu <= 34) return "text-success";  // Optimal
-    return "text-danger";  // Panas
-}
-
-function getKekeruhanColor(kekeruhan) {
-    if (kekeruhan < 3) return "text-danger";  // Jernih
-    if (kekeruhan >= 3 && kekeruhan <= 43) return "text-success";  // Optimal
-    return "text-primary";  // Keruh
-}
-
-function getWaterQualityColor(value) {
-    if (value < 30) return "text-danger"; // Buruk (merah)
-    if (value >= 30 && value < 70) return "text-warning"; // Cukup (kuning/orange)
-    return "text-success"; // Baik (hijau)
-}
-
-function getKualitasLabel(value) {
-    if (value <= 40) return "Buruk";
-    if (value <= 70) return "Sedang";
-    return "Baik";
-}
-
-    function loadHistoryData() {
-    let startDate = $("#start_date").val();
-    let endDate = $("#end_date").val();
-    let ph = $("#ph").val();
-    let suhu = $("#suhu").val();
-    let kekeruhan = $("#kekeruhan").val();
-
-    $.ajax({
-        url: "{{ route('history.filter') }}",
-        type: "GET",
-        data: {
-            start_date: startDate,
-            end_date: endDate,
-            ph: ph,
-            suhu: suhu,
-            kekeruhan: kekeruhan
-        },
-        dataType: "json",
-        success: function(response) {
-            let tableBody = $("#historyBody");
-            tableBody.empty(); 
-            
-            if (response.length === 0) {
-                tableBody.append('<tr><td colspan="4">🔍 Data tidak ditemukan</td></tr>');
-            } else {
-               response.forEach(function(data) {
-                let createdAt = new Date(data.created_at).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
-
-                // Nilai kualitas
-                let kualitasValue = data.kualitas;
-                let kualitasLabel = getKualitasLabel(kualitasValue);
-                let kualitasClass = getKualitasColor(kualitasValue);
-                let statusClass = getKualitasColor(kualitasValue);  // status pakai warna yang sama
-
-                let row = `
-                    <tr>
-                        <td>${createdAt}</td>
-                        <td class="${getPHColor(data.ph)} fw-bold">${data.ph}</td>
-                        <td class="${getSuhuColor(data.suhu)} fw-bold">${data.suhu}°C</td>
-                        <td class="${getKekeruhanColor(data.kekeruhan)} fw-bold">${data.kekeruhan} NTU</td>
-                        <td class="fw-bold ${kualitasClass}">${kualitasValue}%</td>
-                        <td class="fw-bold ${statusClass}">${kualitasLabel}</td>
-                    </tr>
-                `;
-                tableBody.append(row);
+    // Filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const pageBtns = document.querySelectorAll('.page-btn');
+        
+        // Filter button click handler
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Simulate loading new data
+                simulateFilterChange(this.textContent.trim());
             });
-
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Gagal mengambil data:", error);
-        }
-    });
-}
-
-    function getStatusKualitasAir(kualitas) {
-        if (kualitas < 40) {
-            return "Buruk";
-        } else if (kualitas >= 40 && kualitas <= 70) {
-            return "Sedang";
-        } else if (kualitas > 70) {
-            return "Baik";
-        } else {
-            return "-";
-        }
-    }
-
-
-
-   async function exportTableToExcel() {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Riwayat");
-
-    // Header
-    worksheet.columns = [
-        { header: "Tanggal & Waktu", key: "tanggal", width: 25 },
-        { header: "pH", key: "ph", width: 10 },
-        { header: "Suhu (°C)", key: "suhu", width: 15 },
-        { header: "Kekeruhan (NTU)", key: "kekeruhan", width: 20 },
-        { header: "Kualitas Air", key: "kualitas_air", width: 20 },
-        { header: "Status", key: "status", width: 20 }
-    ];
-
-    // Ambil data dari tabel HTML
-    const rows = document.querySelectorAll("#historyTable tbody tr");
-    rows.forEach(row => {
-        const cells = row.querySelectorAll("td");
-        if (cells.length === 6) {
-            const ph = parseFloat(cells[1].innerText);
-            const suhu = parseFloat(cells[2].innerText);
-            const kekeruhan = parseFloat(cells[3].innerText);
-            const kualitasText = cells[4].innerText.replace('%', '').trim();
-            const kualitasValue = parseFloat(kualitasText);
-
-            const newRow = worksheet.addRow({
-                tanggal: cells[0].innerText,
-                ph: ph,
-                suhu: suhu,
-                kekeruhan: kekeruhan,
-                kualitas_air: cells[4].innerText,
-                status: cells[5].innerText
+        });
+        
+        // Pagination button click handler
+        pageBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.querySelector('i')) { // Don't change for arrow buttons
+                    pageBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
             });
-
-            // Warna berdasarkan nilai pH
-            const phCell = newRow.getCell("ph");
-            if (ph < 7.5) phCell.fill = redFill();
-            else if (ph <= 8.5) phCell.fill = greenFill();
-            else phCell.fill = blueFill();
-
-            // Warna berdasarkan suhu
-            const suhuCell = newRow.getCell("suhu");
-            if (suhu < 26) suhuCell.fill = blueFill();
-            else if (suhu <= 34) suhuCell.fill = greenFill();
-            else suhuCell.fill = redFill();
-
-            // Warna berdasarkan kekeruhan
-            const kekeruhanCell = newRow.getCell("kekeruhan");
-            if (kekeruhan < 3) kekeruhanCell.fill = redFill();
-            else if (kekeruhan <= 43) kekeruhanCell.fill = greenFill();
-            else kekeruhanCell.fill = blueFill();
-
-            // Warna berdasarkan kualitas air
-            const kualitasCell = newRow.getCell("kualitas_air");
-            const statusCell = newRow.getCell("status");
-            if (kualitasValue <= 40) {
-                kualitasCell.fill = redFill();
-                statusCell.fill = redFill();
-            } else if (kualitasValue <= 70) {
-                kualitasCell.fill = orangeFill();
-                statusCell.fill = orangeFill();
-            } else {
-                kualitasCell.fill = greenFill();
-                statusCell.fill = greenFill();
-            }
-
-            // Styling umum
-            newRow.eachCell(cell => {
-                cell.font = { bold: true };
-                cell.alignment = { vertical: 'middle', horizontal: 'center' };
-                cell.border = {
-                    top: { style: 'thin' },
-                    left: { style: 'thin' },
-                    bottom: { style: 'thin' },
-                    right: { style: 'thin' }
-                };
-            });
+        });
+        
+        function simulateFilterChange(filter) {
+            console.log('Filter changed to:', filter);
+            // In a real application, this would fetch new data from the server
         }
-    });
-
-    // Export file
-    const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), "riwayat_kualitas_air.xlsx");
-}
-
-// Fungsi bantu untuk warna cell
-function redFill() {
-    return {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFC7CE" } // light red
-    };
-}
-
-function greenFill() {
-    return {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFC6EFCE" } // light green
-    };
-}
-
-function blueFill() {
-    return {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFBDD7EE" } // light blue
-    };
-}
-
-function orangeFill() {
-    return {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFEB9C" } // light orange/yellow
-    };
-}
-
-function getKualitasColor(kualitas) {
-    if (kualitas <= 40) return "text-danger";      // Buruk
-    if (kualitas <= 70) return "text-warning";     // Sedang
-    return "text-success";                         // Baik
-}
-
-function getStatusColor(kualitas) {
-    if (kualitas <= 40) return "text-danger";      // Buruk
-    if (kualitas <= 70) return "text-warning";     // Sedang
-    return "text-success";                         // Baik
-}
-
-function applyThemeToCharts() {
-    const isDark = document.documentElement.classList.contains('dark');
-    const textColor = isDark ? '#ffffff' : '#B4B4B8';
-    const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-
-    Object.values(charts).forEach(chart => {
-        if (!chart) return;
-        chart.options.scales.x.ticks.color = textColor;
-        chart.options.scales.y.ticks.color = textColor;
-        chart.options.scales.x.grid.color = gridColor;
-        chart.options.scales.y.grid.color = gridColor;
-        chart.options.plugins.legend.labels.color = textColor;
-        chart.update();
-    });
-}
-    
-
-
-    $(document).ready(function() {
-        loadHistoryData(); // Load pertama kali
-        setInterval(loadHistoryData, 1000); // Update berkala
     });
 </script>
 @endsection

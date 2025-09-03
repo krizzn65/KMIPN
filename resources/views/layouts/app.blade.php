@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/minimalist-ui.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title> Aqua Monitor</title>
@@ -25,45 +26,96 @@
     </style>
 </head>
 <body>
-     {{-- Navbar atas (desktop) --}}
-        <nav class="navbar navbar-expand-lg navbar-top d-none d-md-flex">
-            <div class="container">
-                <a class="navbar-brand text-white" href="/dashboard">AQUATOR</a>
-                <div class="ms-auto d-flex align-items-center">
-                    <a class="mx-2 nav-link" href="/dashboard">Dashboard</a>
-                    <a class="mx-2 nav-link" href="/history">History</a>
-                    <div class="form-check form-switch ms-3">
-                        <input class="form-check-input" type="checkbox" id="themeSwitch">
-                        <label class="form-check-label text-white" for="themeSwitch">Dark</label>
-                    </div>
-                </div>
-            </div>
-        </nav>
+    <!-- Sidebar Toggle Button (Mobile) -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
 
-        {{-- Navbar bawah (mobile) --}}
-        <div class="navbar-bottom d-md-none">
-        <a href="/dashboard" class="mx-2 d-flex flex-column align-items-center">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="/history" class="mx-2 d-flex flex-column align-items-center">
-            <i class="fas fa-clock-rotate-left"></i>
-            <span>History</span>
-        </a>
-        <a href="#" id="mobileThemeSwitch" class="mx-2 d-flex flex-column align-items-center">
-            <i class="fas fa-circle-half-stroke"></i>
-            <span>Theme</span>
-        </a>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <div class="logo-text">
+                <span class="logo-accent">A</span>QUA MONITOR
+            </div>
         </div>
 
-        <main class="py-4 main-container">
-            @yield('content')
-        </main>
+        <!-- Menu Section -->
+        <div class="sidebar-section">
+            <h3 class="section-title">Menu</h3>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="{{ url('/dashboard') }}" class="sidebar-link {{ request()->is('dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ url('/history') }}" class="sidebar-link {{ request()->is('history') ? 'active' : '' }}">
+                        <i class="fas fa-history"></i>
+                        <span>History</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-        {{-- <footer>
-            &copy; 2025 Aqua Monitor | All Rights Reserved
-        </footer> --}}
-    </div>
+        <div class="sidebar-divider"></div>
+
+        <!-- AI Section -->
+        <div class="sidebar-section">
+            <h3 class="section-title">AI</h3>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-brain"></i>
+                        <span>AI</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- TOOL Section -->
+        <div class="sidebar-section">
+            <h3 class="section-title">TOOL</h3>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="container-fluid py-4">
+            @yield('content')
+        </div>
+    </main>
+
+    <!-- JavaScript for sidebar toggle -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+            });
+            
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 1024) {
+                    if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target) && sidebar.classList.contains('open')) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
 
      <script src="{{ asset('js/app.js') }}"></script>
      

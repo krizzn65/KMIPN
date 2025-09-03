@@ -1,387 +1,421 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
-    <h1 class="mb-4 fw-bold text-primary">📊 Dashboard Monitoring Kualitas Air</h1>
-
-    <!-- Notifikasi -->
-    <div id="alertContainer"></div>
-
-    <!-- Tips Card -->
-    <div class="row mb-4">
-        <div class="col">
-            <div id="tips-card" class="card shadow-sm border-info rounded-4">
-                <div class="card-header bg-info text-white fw-semibold rounded-top-4">💡 Tips Budidaya Udang Vaname</div>
-                <div class="card-body">
-                    <h5 id="tips-title" class="card-title fw-bold">Semua parameter dalam kondisi aman! 🎉</h5>
-                    <p id="tips-content" class="card-text">Pastikan Anda tetap memantau kondisi air secara berkala.</p>
-
-                    <!-- Tambahan untuk status kualitas air -->
-                    <p id="quality-status" class="card-text fw-semibold text-primary mt-2"></p>
-
-                    <!-- Tambahan untuk tips berdasarkan kualitas air -->
-                    <ul id="quality-tips" class="card-text text-secondary mt-2 ps-3"></ul>
-                </div>
+<div class="dashboard-content">
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">AquaMonitor Dashboard</h1>
+        <p class="dashboard-subtitle">Real-time water quality monitoring and analysis</p>
+        
+        <div class="real-time-indicator">
+            <i class="fas fa-clock text-primary"></i>
+            <span id="current-time">{{ now()->format('H:i:s') }}</span>
+            <span class="status-badge status-success">Live</span>
+        </div>
+    </div>
+    
+    <!-- Status Cards Grid -->
+    <div class="status-grid">
+        <!-- pH Card -->
+        <div class="card status-card status-ph">
+            <span class="status-badge status-success">Normal</span>
+            <div class="status-icon">
+                <i class="fas fa-flask"></i>
+            </div>
+            <div class="status-value" id="ph-value">7.2</div>
+            <div class="status-label">pH Level</div>
+            <div class="status-range">Optimal: 6.5 - 8.5</div>
+        </div>
+        
+        <!-- Temperature Card -->
+        <div class="card status-card status-suhu">
+            <span class="status-badge status-success">Normal</span>
+            <div class="status-icon">
+                <i class="fas fa-thermometer-half"></i>
+            </div>
+            <div class="status-value" id="suhu-value">28.5°C</div>
+            <div class="status-label">Water Temperature</div>
+            <div class="status-range">Optimal: 26°C - 30°C</div>
+        </div>
+        
+        <!-- Turbidity Card -->
+        <div class="card status-card status-kekeruhan">
+            <span class="status-badge status-warning">Warning</span>
+            <div class="status-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+            <div class="status-value" id="kekeruhan-value">15.2 NTU</div>
+            <div class="status-label">Turbidity</div>
+            <div class="status-range">Optimal: < 20 NTU</div>
+        </div>
+        
+        <!-- Quality Card -->
+        <div class="card status-card status-quality">
+            <span class="status-badge status-success">Good</span>
+            <div class="status-icon">
+                <i class="fas fa-tint"></i>
+            </div>
+            <div class="status-value" id="quality-value">85%</div>
+            <div class="status-label">Water Quality</div>
+            <div class="status-range">Overall score</div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="chart-section">
+        <h3 class="chart-section-title">Parameter Trends (24 Hours)</h3>
+        <div class="chart-container">
+            <canvas id="trendChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+    
+    <!-- Notifications Section -->
+    <div class="chart-section">
+        <h3 class="chart-section-title">Recent Notifications</h3>
+        <div class="notifications-container">
+            <div class="notification-item notification-warning">
+                <i class="fas fa-exclamation-triangle notification-icon"></i>
+                <strong>Turbidity Increased</strong>
+                <p>Turbidity level reached 15.2 NTU. Consider cleaning procedures.</p>
+                <small>2 minutes ago</small>
+            </div>
+            
+            <div class="notification-item notification-success">
+                <i class="fas fa-check-circle notification-icon"></i>
+                <strong>All Parameters Normal</strong>
+                <p>All parameters within optimal range for the last 6 hours.</p>
+                <small>1 hour ago</small>
             </div>
         </div>
     </div>
-
-
-    <!-- Nilai Realtime Cards -->
-    <div class="row row-cols-2 row-cols-md-4 g-3">
-        <div class="col">
-            <div id="card-ph" class="card border-primary shadow-sm rounded-4 h-100">
-                <div class="card-header bg-primary text-white fw-semibold">pH</div>
-                <div class="card-body text-primary text-center">
-                    <h5 id="ph-value" class="card-title display-6">-</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div id="card-suhu" class="card border-success shadow-sm rounded-4 h-100">
-                <div class="card-header bg-success text-white fw-semibold">Suhu (°C)</div>
-                <div class="card-body text-success text-center">
-                    <h5 id="suhu-value" class="card-title display-6">-</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div id="card-kekeruhan" class="card border-warning shadow-sm rounded-4 h-100">
-                <div class="card-header bg-warning text-dark fw-semibold">Kekeruhan (NTU)</div>
-                <div class="card-body text-warning text-center">
-                    <h5 id="kekeruhan-value" class="card-title display-6">-</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div id="card-quality" class="card border-info shadow-sm rounded-4 h-100">
-                <div class="card-header bg-info text-white fw-semibold">Kualitas Air (%)</div>
-                <div class="card-body text-info text-center">
-                    <h5 id="quality-value" class="card-title display-6">-</h5>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-    <!-- Grafik Parameter -->
-    <div class="row mt-5 g-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm rounded-4">
-                <div class="card-header text-black fw-semibold bg-light">📈 Grafik pH</div>
-                <div class="card-body">
-                    <canvas id="phChart" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card shadow-sm rounded-4">
-                <div class="card-header text-black fw-semibold bg-light">📈 Grafik Suhu</div>
-                <div class="card-body">
-                    <canvas id="suhuChart" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm rounded-4">
-                <div class="card-header text-black fw-semibold bg-light">📈 Grafik Kekeruhan</div>
-                <div class="card-body">
-                    <canvas id="kekeruhanChart" height="200"></canvas>
-                </div>
-            </div>
-        </div>
+    
+    <!-- Footer -->
+    <div class="dashboard-footer">
+        <p>&copy; 2025 AquaMonitor Water Quality System. Monitoring the health of your water.</p>
     </div>
 </div>
 
-<!-- Script -->
+<style>
+    .dashboard-content {
+        padding: var(--space-xl) 0;
+    }
+    
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: var(--space-3xl);
+        animation: fadeIn 0.8s ease-out;
+    }
+    
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: var(--font-weight-semibold);
+        color: var(--primary-color);
+        margin-bottom: var(--space-sm);
+    }
+    
+    .dashboard-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-3xl);
+    }
+    
+    .status-card {
+        text-align: center;
+        padding: var(--space-xl);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .status-card:hover {
+        transform: translateY(-4px);
+    }
+    
+    .status-icon {
+        font-size: 2.5rem;
+        margin-bottom: var(--space-lg);
+        opacity: 0.9;
+    }
+    
+    .status-value {
+        font-size: 2.5rem;
+        font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--space-sm);
+    }
+    
+    .status-label {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-bottom: var(--space-sm);
+    }
+    
+    .status-range {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        opacity: 0.8;
+    }
+    
+    .status-badge {
+        position: absolute;
+        top: var(--space-lg);
+        right: var(--space-lg);
+        font-size: 0.8rem;
+        padding: var(--space-xs) var(--space-md);
+        border-radius: 20px;
+        font-weight: var(--font-weight-medium);
+    }
+    
+    .chart-section {
+        margin-bottom: var(--space-3xl);
+    }
+    
+    .chart-section-title {
+        font-size: 1.5rem;
+        font-weight: var(--font-weight-semibold);
+        color: var(--primary-color);
+        margin-bottom: var(--space-xl);
+        text-align: center;
+    }
+    
+    .chart-container {
+        background: var(--surface-color);
+        border-radius: var(--border-radius-lg);
+        padding: var(--space-xl);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-lg);
+    }
+    
+    .notifications-container {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .notification-item {
+        padding: var(--space-lg);
+        border-radius: var(--border-radius-md);
+        margin-bottom: var(--space-md);
+        border-left: 4px solid;
+        background: var(--surface-color);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .notification-warning {
+        border-left-color: var(--warning-color);
+        background: rgba(243, 156, 18, 0.05);
+    }
+    
+    .notification-success {
+        border-left-color: var(--success-color);
+        background: rgba(39, 174, 96, 0.05);
+    }
+    
+    .notification-icon {
+        font-size: 1.2rem;
+        margin-right: var(--space-sm);
+    }
+    
+    .dashboard-footer {
+        text-align: center;
+        margin-top: var(--space-3xl);
+        padding-top: var(--space-xl);
+        border-top: 1px solid var(--border-color);
+        color: var(--text-secondary);
+    }
+    
+    .real-time-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        background: var(--surface-color);
+        padding: var(--space-sm) var(--space-md);
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-bottom: var(--space-lg);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    @media (max-width: 768px) {
+        .status-grid {
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+        
+        .status-card {
+            padding: var(--space-lg);
+        }
+        
+        .status-value {
+            font-size: 2rem;
+        }
+        
+        .dashboard-title {
+            font-size: 2rem;
+        }
+        
+        .chart-container {
+            padding: var(--space-lg);
+        }
+    }
+    
+    /* Color variations for status cards */
+    .status-ph .status-icon { color: #3498DB; }
+    .status-ph .status-value { color: #3498DB; }
+    
+    .status-suhu .status-icon { color: #27AE60; }
+    .status-suhu .status-value { color: #27AE60; }
+    
+    .status-kekeruhan .status-icon { color: #F39C12; }
+    .status-kekeruhan .status-value { color: #F39C12; }
+    
+    .status-quality .status-icon { color: #9B59B6; }
+    .status-quality .status-value { color: #9B59B6; }
+</style>
+
 <script>
-    let sensorData = @json($sensorData);
-    let latestQuality = null; 
-    const getLabels = data => data.map(d => new Date(d.created_at).toLocaleTimeString());
-    const getDataArray = (data, key) => data.map(d => parseFloat(d[key]));
-
-    let charts = {
-        ph: null,
-        suhu: null,
-        kekeruhan: null
+    // Simulated sensor data
+    let sensorData = {
+        ph: 7.2,
+        suhu: 28.5,
+        kekeruhan: 15.2,
+        quality: 85
     };
-
-    function createChart(id, label, data, borderColor, bgColor) {
-        const ctx = document.getElementById(id).getContext('2d');
-        return new Chart(ctx, {
+    
+    // Update real-time clock
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        document.getElementById('current-time').textContent = timeString;
+    }
+    
+    // Update status badges based on values
+    function updateStatusBadges() {
+        const phBadge = document.querySelector('.status-ph .status-badge');
+        const suhuBadge = document.querySelector('.status-suhu .status-badge');
+        const kekeruhanBadge = document.querySelector('.status-kekeruhan .status-badge');
+        const qualityBadge = document.querySelector('.status-quality .status-badge');
+        
+        // pH status
+        if (sensorData.ph < 6.5 || sensorData.ph > 8.5) {
+            phBadge.className = 'status-badge status-danger';
+            phBadge.textContent = 'Critical';
+        } else {
+            phBadge.className = 'status-badge status-success';
+            phBadge.textContent = 'Normal';
+        }
+        
+        // Temperature status
+        if (sensorData.suhu < 26 || sensorData.suhu > 30) {
+            suhuBadge.className = 'status-badge status-danger';
+            suhuBadge.textContent = 'Critical';
+        } else {
+            suhuBadge.className = 'status-badge status-success';
+            suhuBadge.textContent = 'Normal';
+        }
+        
+        // Turbidity status
+        if (sensorData.kekeruhan > 20) {
+            kekeruhanBadge.className = 'status-badge status-danger';
+            kekeruhanBadge.textContent = 'Critical';
+        } else if (sensorData.kekeruhan > 15) {
+            kekeruhanBadge.className = 'status-badge status-warning';
+            kekeruhanBadge.textContent = 'Warning';
+        } else {
+            kekeruhanBadge.className = 'status-badge status-success';
+            kekeruhanBadge.textContent = 'Normal';
+        }
+        
+        // Quality status
+        if (sensorData.quality >= 80) {
+            qualityBadge.className = 'status-badge status-success';
+            qualityBadge.textContent = 'Excellent';
+        } else if (sensorData.quality >= 60) {
+            qualityBadge.className = 'status-badge status-warning';
+            qualityBadge.textContent = 'Good';
+        } else {
+            qualityBadge.className = 'status-badge status-danger';
+            qualityBadge.textContent = 'Poor';
+        }
+    }
+    
+    // Simulate data updates
+    function simulateDataUpdate() {
+        // Random variations
+        sensorData.ph += (Math.random() - 0.5) * 0.1;
+        sensorData.suhu += (Math.random() - 0.5) * 0.5;
+        sensorData.kekeruhan += (Math.random() - 0.5) * 1;
+        sensorData.quality = Math.max(0, Math.min(100, sensorData.quality + (Math.random() - 0.5) * 2));
+        
+        // Keep values in reasonable ranges
+        sensorData.ph = Math.max(6, Math.min(9, sensorData.ph));
+        sensorData.suhu = Math.max(25, Math.min(35, sensorData.suhu));
+        sensorData.kekeruhan = Math.max(0, Math.min(50, sensorData.kekeruhan));
+        
+        // Update display
+        document.getElementById('ph-value').textContent = sensorData.ph.toFixed(1);
+        document.getElementById('suhu-value').textContent = sensorData.suhu.toFixed(1) + '°C';
+        document.getElementById('kekeruhan-value').textContent = sensorData.kekeruhan.toFixed(1) + ' NTU';
+        document.getElementById('quality-value').textContent = Math.round(sensorData.quality) + '%';
+        
+        updateStatusBadges();
+    }
+    
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        updateStatusBadges();
+        
+        // Simulate real-time updates every 3 seconds
+        setInterval(simulateDataUpdate, 3000);
+        
+        // Initialize trend chart (placeholder)
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctx, {
             type: 'line',
             data: {
-                labels: getLabels(sensorData),
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
                 datasets: [{
-                    label,
-                    data,
-                    borderColor,
-                    backgroundColor: bgColor,
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
+                    label: 'pH Level',
+                    data: [7.0, 7.2, 7.1, 7.3, 7.2, 7.1],
+                    borderColor: '#3498DB',
+                    tension: 0.4,
+                    fill: false
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { position: 'top' },
-                    tooltip: { enabled: true }
+                    legend: {
+                        position: 'top',
+                    }
                 },
                 scales: {
                     y: {
-                        beginAtZero: false
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
                     }
                 }
             }
         });
-    }
-
-    function initCharts() {
-        charts.ph = createChart('phChart', 'pH', getDataArray(sensorData, 'ph'), '#007bff', 'rgba(0, 123, 255, 0.1)');
-        charts.suhu = createChart('suhuChart', 'Suhu (°C)', getDataArray(sensorData, 'suhu'), '#28a745', 'rgba(40, 167, 69, 0.1)');
-        charts.kekeruhan = createChart('kekeruhanChart', 'Kekeruhan (NTU)', getDataArray(sensorData, 'kekeruhan'), '#ffc107', 'rgba(255, 193, 7, 0.1)');
-    }
-
- 
-
-    function updateCards(latestData) {
-        const params = ['ph', 'suhu', 'kekeruhan'];
-
-        // Hanya update jika data quality tersedia dan valid
-if ('quality' in latestData && latestData.quality !== null) {
-    document.getElementById('quality-value').textContent = latestData.quality;
-    latestQuality = latestData.quality; // simpan untuk backup
-} else if (latestQuality !== null) {
-    // fallback pakai data sebelumnya
-    document.getElementById('quality-value').textContent = latestQuality;
-}
-
-
-        params.forEach(param => {
-            const value = latestData[param] !== undefined ? latestData[param] : "-";
-            document.getElementById(`${param}-value`).textContent = value;
-
-            const element = document.getElementById(`card-${param}`);
-            element.classList.remove('border-primary', 'border-success', 'border-warning', 'border-danger');
-
-            let isDanger = false;
-            if (param === 'ph') isDanger = latestData.ph < 7.5 || latestData.ph > 8.5;
-            if (param === 'suhu') isDanger = latestData.suhu < 26 || latestData.suhu > 34;
-            if (param === 'kekeruhan') isDanger = latestData.kekeruhan < 5 || latestData.kekeruhan > 43;
-
-            element.classList.add(isDanger ? 'border-danger' : 'border-success');
-        });
-    }
-
-
-    function updateTips(latestData) {
-    let issues = [];
-    let tipsTitle = "✅ Semua parameter dalam kondisi aman!";
-    let tipsContent = "Pastikan Anda tetap memantau kondisi air secara berkala.";
-    let borderClass = "border-info";
-
-    const conditions = {
-        "pH terlalu rendah. Tambahkan kapur dolomit.": latestData.ph < 7.5,
-        "pH terlalu tinggi. Lakukan penggantian air bertahap.": latestData.ph > 8.5,
-        "Suhu terlalu tinggi. Tambahkan aerasi dan hindari pakan berlebih.": latestData.suhu > 34,
-        "Suhu terlalu rendah. Gunakan pemanas air.": latestData.suhu < 26,
-        "Kekeruhan tinggi. Periksa sisa pakan dan kurangi kepadatan tebar.": latestData.kekeruhan > 43
-    };
-
-    for (const [msg, condition] of Object.entries(conditions)) {
-        if (condition) issues.push(msg);
-    }
-
-    // Menentukan status kualitas air
-    let qualityText = "";
-    let qualityTips = [];
-    let currentQuality = latestData.quality;
-
-    if (currentQuality !== undefined && currentQuality !== null) {
-    if (currentQuality >= 70) {
-        qualityText = "🌊 Kualitas air saat ini **baik**. Lanjutkan perawatan seperti biasa.";
-    } else if (currentQuality >= 50) {
-        qualityText = "⚠️ Kualitas air saat ini **cukup**. Perlu perhatian lebih.";
-        qualityTips.push("Periksa warna air secara visual — hindari warna terlalu gelap atau terlalu hijau pekat.");
-        qualityTips.push("Kurangi pemberian pakan jika air terlihat kotor atau berbau.");
-        qualityTips.push("Tambahkan air bersih secara bertahap, terutama saat cuaca panas.");
-    } else {
-        qualityText = "🚨 Kualitas air saat ini **kurang baik**. Perlu tindakan cepat!";
-        qualityTips.push("Kuras sebagian air tambak dan isi dengan air baru dari sumber bersih.");
-        qualityTips.push("Periksa bau air — jika amis busuk, segera lakukan penggantian air bertahap.");
-        qualityTips.push("Jika tersedia, tebarkan probiotik atau gunakan bahan alami seperti daun ketapang untuk menetralisir kondisi.");
-    }
-
-    // Tambahan: notifikasi tren perubahan
-    if (latestQuality !== null && currentQuality !== latestQuality) {
-        const diff = currentQuality - latestQuality;
-        const trend = diff > 0 ? "meningkat" : "menurun";
-        qualityText += ` Kualitas air ${trend} dari sebelumnya (${latestQuality} → ${currentQuality}).`;
-    }
-
-    latestQuality = currentQuality;
-    }
-
-
-    // Update judul dan konten tips
-    if (issues.length > 0) {
-        tipsTitle = `⚠️ ${issues.length} parameter tidak normal!`;
-        tipsContent = issues.join(" ");
-        borderClass = "border-danger";
-    }
-
-    // Render ke HTML
-    document.getElementById("tips-title").textContent = tipsTitle;
-    document.getElementById("tips-content").textContent = tipsContent;
-    document.getElementById("tips-card").className = `card shadow-sm ${borderClass} rounded-4`;
-
-    // Tampilkan status kualitas air
-    const qualityStatus = document.getElementById("quality-status");
-    qualityStatus.innerHTML = qualityText;
-
-    // Tampilkan tips tambahan jika kualitas air kurang baik
-    const qualityTipsList = document.getElementById("quality-tips");
-    qualityTipsList.innerHTML = ""; // kosongkan dulu
-    qualityTips.forEach(tip => {
-        const li = document.createElement("li");
-        li.textContent = tip;
-        qualityTipsList.appendChild(li);
-    });
-    }
-
-
-    function checkWaterQuality() {
-        $.ajax({
-            url: "{{ url('/dashboard/check-water') }}",
-            type: "GET",
-            dataType: "json",
-            success: function(response) {
-                let alertContainer = $("#alertContainer");
-                alertContainer.empty();
-
-                if (response.status === "warning") {
-                    response.messages.forEach(msg => {
-                        alertContainer.append(`
-                            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                                ${msg}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        `);
-                    });
-                } else {
-                    alertContainer.append(`
-                        <div class="alert alert-success shadow-sm" role="alert">
-                            ✅ Semua parameter dalam kondisi normal.
-                        </div>
-                    `);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Gagal mengambil data:", error);
-            }
-        });
-    }
-
-    function updateCharts() {
-        fetch('/api/sensor-data')
-            .then(response => response.json())
-            .then(data => {
-                if (!data.length) return;
-
-                sensorData = data; // <- UPDATE sensorData agar grafik ikut update
-                const latest = data[0];
-
-                updateCards(latest);
-                updateTips(latest);
-
-                const labels = getLabels(sensorData);
-                charts.ph.data.labels = labels;
-                charts.suhu.data.labels = labels;
-                charts.kekeruhan.data.labels = labels;
-
-                charts.ph.data.datasets[0].data = getDataArray(sensorData, 'ph');
-                charts.suhu.data.datasets[0].data = getDataArray(sensorData, 'suhu');
-                charts.kekeruhan.data.datasets[0].data = getDataArray(sensorData, 'kekeruhan');
-
-                charts.ph.update();
-                charts.suhu.update();
-                charts.kekeruhan.update();
-            })
-            .catch(console.error);
-    }
-
-    function applyThemeToCharts() {
-        const isDark = document.documentElement.classList.contains('dark');
-
-        const textColor = isDark ? '#ffffff' : '#B4B4B8';
-        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-
-        Object.values(charts).forEach(chart => {
-            if (!chart) return;
-            chart.options.scales.x.ticks.color = textColor;
-            chart.options.scales.y.ticks.color = textColor;
-            chart.options.scales.x.grid.color = gridColor;
-            chart.options.scales.y.grid.color = gridColor;
-            chart.options.plugins.legend.labels.color = textColor;
-            chart.update();
-        });
-    }
-
-    let qualityLog = JSON.parse(localStorage.getItem("qualityLog")) || [];
-const MAX_LOG = 100;
-
-function fetchWaterQuality() {
-    fetch('/check-water')
-        .then(response => response.json())
-        .then(latestData => {
-            if ('quality' in latestData) {
-                const quality = parseFloat(latestData.quality);
-                if (!isNaN(quality)) {
-                    document.getElementById('quality-value').textContent = quality;
-
-                    const status = quality >= 70 ? "Baik" :
-                                   quality >= 50 ? "Cukup" : "Kurang Baik";
-
-                    if (qualityLog.length >= MAX_LOG) qualityLog.shift();
-
-                    qualityLog.push({
-                        waktu: new Date().toLocaleString(),
-                        quality,
-                        status
-                    });
-
-                    localStorage.setItem("qualityLog", JSON.stringify(qualityLog));
-                } else {
-                    document.getElementById('quality-value').textContent = "-";
-                }
-            } else {
-                console.warn("Response tidak memiliki field 'quality'", latestData);
-                document.getElementById('quality-value').textContent = "-";
-            }
-        })
-        .catch(error => {
-            console.error('Gagal mengambil data kualitas air:', error);
-            document.getElementById('quality-value').textContent = "-";
-        });
-}
-
-
-
-    // Jalankan saat halaman selesai dimuat
-    window.addEventListener('DOMContentLoaded', fetchWaterQuality);
-
-    document.addEventListener("DOMContentLoaded", () => {
-        initCharts();
-        applyThemeToCharts(); 
-        setInterval(updateCharts, 1000);
-        checkWaterQuality();
     });
 </script>
-
 @endsection
