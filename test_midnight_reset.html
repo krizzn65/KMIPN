@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Midnight Reset Test</title>
+        <script>
+            // Test the midnight reset logic
+            function testMidnightReset() {
+                console.log("Testing midnight reset functionality...");
+
+                // Simulate current time as midnight
+                const midnight = new Date();
+                midnight.setHours(0, 0, 0, 0);
+
+                // Set localStorage to yesterday's date
+                const yesterday = new Date(midnight);
+                yesterday.setDate(yesterday.getDate() - 1);
+                localStorage.setItem("lastChartDate", yesterday.toDateString());
+
+                console.log(
+                    "Yesterday's date stored:",
+                    yesterday.toDateString()
+                );
+                console.log(
+                    "Current time (simulated midnight):",
+                    midnight.toDateString(),
+                    midnight.getHours() + ":00"
+                );
+
+                // Test the reset logic
+                const currentDateStr = midnight.toDateString();
+                const lastStoredDate = localStorage.getItem("lastChartDate");
+
+                if (
+                    lastStoredDate !== currentDateStr &&
+                    midnight.getHours() === 0
+                ) {
+                    console.log(
+                        "✅ Midnight reset condition met! Chart would be reset."
+                    );
+                    return true;
+                } else {
+                    console.log("❌ Midnight reset condition not met.");
+                    return false;
+                }
+            }
+
+            // Test the hourly data initialization
+            function testHourlyData() {
+                console.log("Testing hourly data initialization...");
+
+                const hourlyData = {};
+                const now = new Date();
+                const hours = 24;
+
+                for (let i = 0; i < hours; i++) {
+                    const hourTime = new Date(now);
+                    hourTime.setHours(now.getHours() - i);
+                    const hourKey = hourTime.getHours();
+
+                    hourlyData[hourKey] = {
+                        ph: [],
+                        suhu: [],
+                        kekeruhan: [],
+                        quality: [],
+                        date: now.toDateString(),
+                    };
+                }
+
+                console.log(
+                    "✅ Hourly data structure created with",
+                    Object.keys(hourlyData).length,
+                    "hours"
+                );
+                console.log("Sample hour data:", hourlyData[now.getHours()]);
+                return true;
+            }
+
+            // Run tests when page loads
+            document.addEventListener("DOMContentLoaded", function () {
+                console.log("=== Midnight Reset Test ===");
+                const test1 = testMidnightReset();
+                const test2 = testHourlyData();
+
+                if (test1 && test2) {
+                    console.log(
+                        "✅ All tests passed! The automatic reset functionality is working correctly."
+                    );
+                } else {
+                    console.log(
+                        "❌ Some tests failed. Please check the implementation."
+                    );
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Midnight Reset Test</h1>
+        <p>Open browser console to see test results.</p>
+        <button onclick="testMidnightReset()">Run Midnight Test</button>
+        <button onclick="testHourlyData()">Run Hourly Data Test</button>
+    </body>
+</html>

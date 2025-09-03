@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Chart Functionality Test</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                min-height: 100vh;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                width: 100%;
+            }
+            .cards-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .card {
+                border: 1px solid #ccc;
+                padding: 15px;
+                border-radius: 8px;
+                text-align: center;
+                background: #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s ease;
+            }
+            .card:hover {
+                transform: translateY(-2px);
+            }
+            .status-value {
+                font-size: clamp(20px, 5vw, 28px);
+                font-weight: bold;
+                color: #2c3e50;
+                margin-bottom: 5px;
+            }
+            .chart-container {
+                position: relative;
+                width: 100%;
+                height: 400px;
+                margin: 20px 0;
+            }
+            canvas {
+                display: block;
+                width: 100% !important;
+                height: 100% !important;
+            }
+            button {
+                padding: 12px 24px;
+                background: #3498db;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: background 0.3s ease;
+            }
+            button:hover {
+                background: #2980b9;
+            }
+
+            /* Media queries for responsive adjustments */
+            @media (max-width: 768px) {
+                body {
+                    padding: 15px;
+                }
+                .cards-container {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 10px;
+                }
+                .card {
+                    padding: 12px;
+                }
+                .status-value {
+                    font-size: clamp(18px, 4vw, 24px);
+                }
+                .chart-container {
+                    height: 300px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                body {
+                    padding: 10px;
+                }
+                .cards-container {
+                    grid-template-columns: 1fr;
+                    gap: 8px;
+                }
+                .card {
+                    padding: 10px;
+                }
+                .status-value {
+                    font-size: clamp(16px, 3.5vw, 20px);
+                }
+                .chart-container {
+                    height: 250px;
+                }
+                button {
+                    width: 100%;
+                    padding: 10px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Chart Functionality Test</h1>
+
+        <div class="container">
+            <div class="cards-container">
+                <div class="card">
+                    <div class="status-value" id="ph-value">7.2</div>
+                    <div>pH Level</div>
+                </div>
+
+                <div class="card">
+                    <div class="status-value" id="suhu-value">28.5°C</div>
+                    <div>Water Temperature</div>
+                </div>
+
+                <div class="card">
+                    <div class="status-value" id="kekeruhan-value">15.2 NTU</div>
+                    <div>Turbidity</div>
+                </div>
+
+                <div class="card">
+                    <div class="status-value" id="quality-value">85%</div>
+                    <div>Water Quality</div>
+                </div>
+            </div>
+
+        <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+        </div>
+
+        <button onclick="simulateChange()">Simulate Value Change</button>
+
+        <script>
+            // Copy the relevant JavaScript functions from the dashboard implementation
+            let trendChart = null;
+            let currentParameter = "ph";
+            let hourlyData = {};
+            let currentHour = null;
+
+            function initializeHourlyData() {
+                const hours = 24;
+                const now = new Date();
+
+                hourlyData = {};
+                for (let i = 0; i < hours; i++) {
+                    const hourTime = new Date(now);
+                    hourTime.setHours(now.getHours() - i);
+                    const hourKey = hourTime.getHours();
+
+                    hourlyData[hourKey] = {
+                        ph: [],
+                        suhu: [],
+                        kekeruhan: [],
+                        quality: [],
+                    };
+                }
+            }
+
+            function getCurrentCardValues() {
+                const phValue = parseFloat(
+                    document.getElementById("ph-value").textContent
+                );
+                const suhuValue = parseFloat(
+                    document.getElementById("suhu-value").textContent
+                );
+                const kekeruhanValue = parseFloat(
+                    document.getElementById("kekeruhan-value").textContent
+                );
+                const qualityValue = parseFloat(
+                    document
+                        .getElementById("quality-value")
+                        .textContent.replace("%", "")
+                );
+
+                return {
+                    ph: phValue,
+                    suhu: suhuValue,
+                    kekeruhan: kekeruhanValue,
+                    quality: qualityValue,
+                };
+            }
+
+            function logCurrentValues() {
+                const values = getCurrentCardValues();
+                const now = new Date();
+                const currentHour = now.getHours();
+
+                if (hourlyData[currentHour]) {
+                    hourlyData[currentHour].ph.push(values.ph);
+                    hourlyData[currentHour].suhu.push(values.suhu);
+                    hourlyData[currentHour].kekeruhan.push(values.kekeruhan);
+                    hourlyData[currentHour].quality.push(values.quality);
+
+                    updateChartFromHourlyData();
+                }
+            }
+
+            function updateChartFromHourlyData() {
+                const hours = 24;
+                const now = new Date();
+                const labels = [];
+                const data = [];
+
+                for (let i = 0; i < hours; i++) {
+                    const hourTime = new Date(now);
+                    hourTime.setHours(now.getHours() - i);
+                    const hourKey = hourTime.getHours();
+
+                    labels.unshift(hourTime.getHours() + ":00");
+
+                    if (
+                        hourlyData[hourKey] &&
+                        hourlyData[hourKey][currentParameter].length > 0
+                    ) {
+                        const sum = hourlyData[hourKey][
+                            currentParameter
+                        ].reduce((a, b) => a + b, 0);
+                        const avg =
+                            sum / hourlyData[hourKey][currentParameter].length;
+                        data.unshift(parseFloat(avg.toFixed(2)));
+                    } else {
+                        data.unshift(null);
+                    }
+                }
+
+                updateChart(labels, data, currentParameter);
+            }
+
+            function updateChart(labels, data, parameter) {
+                const ctx = document
+                    .getElementById("trendChart")
+                    .getContext("2d");
+
+                const getParameterColor = (param) => {
+                    switch (param) {
+                        case "ph":
+                            return "#3498DB";
+                        case "suhu":
+                            return "#27AE60";
+                        case "kekeruhan":
+                            return "#F39C12";
+                        case "quality":
+                            return "#9B59B6";
+                        default:
+                            return "#3498DB";
+                    }
+                };
+
+                const getParameterLabel = (param) => {
+                    switch (param) {
+                        case "ph":
+                            return "pH Level";
+                        case "suhu":
+                            return "Temperature (°C)";
+                        case "kekeruhan":
+                            return "Turbidity (NTU)";
+                        case "quality":
+                            return "Water Quality Score (%)";
+                        default:
+                            return "pH Level";
+                    }
+                };
+
+                if (trendChart) {
+                    trendChart.data.labels = labels;
+                    trendChart.data.datasets[0].data = data;
+                    trendChart.data.datasets[0].label =
+                        getParameterLabel(parameter);
+                    trendChart.data.datasets[0].borderColor =
+                        getParameterColor(parameter);
+                    trendChart.update();
+                } else {
+                    trendChart = new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: getParameterLabel(parameter),
+                                    data: data,
+                                    borderColor: getParameterColor(parameter),
+                                    tension: 0.4,
+                                    fill: false,
+                                    pointBackgroundColor:
+                                        getParameterColor(parameter),
+                                    pointBorderColor: "#fff",
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                },
+                            ],
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: {
+                                duration: 800,
+                                easing: "easeOutQuart",
+                                resize: {
+                                    duration: 300,
+                                    easing: "easeOutQuart"
+                                }
+                            },
+                            layout: {
+                                padding: {
+                                    top: 20,
+                                    right: 20,
+                                    bottom: 20,
+                                    left: 20
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    labels: {
+                                        font: {
+                                            size: 14,
+                                            family: 'Arial, sans-serif'
+                                        },
+                                        padding: 20,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleFont: {
+                                        size: 14,
+                                        family: 'Arial, sans-serif'
+                                    },
+                                    bodyFont: {
+                                        size: 13,
+                                        family: 'Arial, sans-serif'
+                                    },
+                                    padding: 12,
+                                    cornerRadius: 6,
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.1)',
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 12,
+                                            family: 'Arial, sans-serif'
+                                        },
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }
+                                },
+                                y: {
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.1)',
+                                        drawBorder: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 12,
+                                            family: 'Arial, sans-serif'
+                                        },
+                                        padding: 8
+                                    }
+                                }
+                            }
+                        },
+                    });
+                }
+            }
+
+            function simulateChange() {
+                const phValue = (6.5 + Math.random() * 2).toFixed(1);
+                const suhuValue = (26 + Math.random() * 6).toFixed(1);
+                const kekeruhanValue = (Math.random() * 40).toFixed(1);
+                const qualityValue = (50 + Math.random() * 45).toFixed(0);
+
+                document.getElementById("ph-value").textContent = phValue;
+                document.getElementById("suhu-value").textContent =
+                    suhuValue + "°C";
+                document.getElementById("kekeruhan-value").textContent =
+                    kekeruhanValue + " NTU";
+                document.getElementById("quality-value").textContent =
+                    qualityValue + "%";
+
+                console.log("Values changed:", {
+                    phValue,
+                    suhuValue,
+                    kekeruhanValue,
+                    qualityValue,
+                });
+            }
+
+            // Initialize
+            document.addEventListener("DOMContentLoaded", function () {
+                initializeHourlyData();
+                logCurrentValues(); // Log initial values
+
+                // Monitor changes
+                const observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        if (
+                            mutation.type === "characterData" ||
+                            mutation.type === "childList"
+                        ) {
+                            const target = mutation.target;
+                            if (target.id && target.id.endsWith("-value")) {
+                                logCurrentValues();
+                            }
+                        }
+                    });
+                });
+
+                const valueElements = [
+                    document.getElementById("ph-value"),
+                    document.getElementById("suhu-value"),
+                    document.getElementById("kekeruhan-value"),
+                    document.getElementById("quality-value"),
+                ];
+
+                valueElements.forEach((element) => {
+                    observer.observe(element, {
+                        characterData: true,
+                        childList: true,
+                        subtree: true,
+                    });
+                });
+
+                console.log(
+                    'Monitoring started. Click "Simulate Value Change" to test.'
+                );
+
+                // Add resize event listener for real-time responsiveness
+                let resizeTimeout;
+                window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(function() {
+                        if (trendChart) {
+                            trendChart.resize();
+                            trendChart.update('resize');
+                            handleChartResize();
+                        }
+                    }, 250);
+                });
+
+                // Initial chart resize to ensure proper rendering
+                setTimeout(function() {
+                    if (trendChart) {
+                        trendChart.resize();
+                        handleChartResize();
+                    }
+                }, 100);
+            });
+
+            // Function to handle responsive chart updates
+            function handleChartResize() {
+                if (trendChart) {
+                    const chartContainer = document.querySelector('.chart-container');
+                    const width = chartContainer.clientWidth;
+                    
+                    // Adjust font sizes based on container width
+                    const baseFontSize = Math.max(10, Math.min(14, width / 80));
+                    
+                    if (trendChart.options.plugins) {
+                        if (trendChart.options.plugins.legend) {
+                            trendChart.options.plugins.legend.labels.font.size = baseFontSize;
+                        }
+                        if (trendChart.options.plugins.tooltip) {
+                            trendChart.options.plugins.tooltip.titleFont.size = baseFontSize;
+                            trendChart.options.plugins.tooltip.bodyFont.size = baseFontSize - 1;
+                        }
+                    }
+                    
+                    if (trendChart.options.scales) {
+                        if (trendChart.options.scales.x && trendChart.options.scales.x.ticks) {
+                            trendChart.options.scales.x.ticks.font.size = baseFontSize - 2;
+                            // Adjust label rotation for smaller screens
+                            if (width < 600) {
+                                trendChart.options.scales.x.ticks.maxRotation = 90;
+                                trendChart.options.scales.x.ticks.minRotation = 90;
+                            } else {
+                                trendChart.options.scales.x.ticks.maxRotation = 45;
+                                trendChart.options.scales.x.ticks.minRotation = 45;
+                            }
+                        }
+                        if (trendChart.options.scales.y && trendChart.options.scales.y.ticks) {
+                            trendChart.options.scales.y.ticks.font.size = baseFontSize - 2;
+                        }
+                    }
+                    
+                    trendChart.update();
+                }
+            }
+
+            // Add resize observer for more precise responsive handling
+            if (typeof ResizeObserver !== 'undefined') {
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer) {
+                    const resizeObserver = new ResizeObserver(function(entries) {
+                        for (let entry of entries) {
+                            if (entry.contentBoxSize) {
+                                handleChartResize();
+                            }
+                        }
+                    });
+                    resizeObserver.observe(chartContainer);
+                }
+            }
+        </script>
+    </body>
+</html>
