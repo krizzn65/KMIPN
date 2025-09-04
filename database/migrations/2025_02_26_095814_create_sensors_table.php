@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up()
     {
-    Schema::create('sensors', function (Blueprint $table) {
-        $table->id();
-        $table->float('ph');
-        $table->float('suhu');
-        $table->float('salinitas');
-        $table->float('kekeruhan');
-        $table->timestamps();
-    });
+        Schema::create('sensors', function (Blueprint $table) {
+            $table->id();
+            $table->double('ph');
+            $table->double('suhu');
+            $table->double('tds');
+            $table->double('kualitas');
+            $table->timestamps();
+        });
     }
 
 
