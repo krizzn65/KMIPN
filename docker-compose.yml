@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: kmipn-app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        networks:
+            - iotnet
+
+    webserver:
+        image: nginx:alpine
+        container_name: kmipn-nginx
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d
+        networks:
+            - iotnet
+        depends_on:
+            - app
+
+networks:
+    iotnet:
+        driver: bridge
+
+volumes:
+    mysql_data:
+        driver: local
