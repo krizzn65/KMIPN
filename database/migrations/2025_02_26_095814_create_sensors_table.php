@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->float('ph');
             $table->float('suhu');
-            $table->float('tds');
+            $table->float('kekeruhan');
             $table->float('kualitas');
             $table->timestamps();
         });
