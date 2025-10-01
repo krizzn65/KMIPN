@@ -46,7 +46,7 @@
                 <div class="status-value" id="ph-value">--</div>
                 <div class="status-label">pH Level</div>
                 <div class="status-range">
-                    <span class="range-label">Normal:</span> 7.5–8.5
+                    <span class="range-label">Normal:</span> 6.8-8.5
                 </div>
                 <div class="status-message" id="ph-message">Monitoring pH level</div>
             </div>
@@ -62,7 +62,7 @@
                 <div class="status-value" id="suhu-value">--°C</div>
                 <div class="status-label">Water Temperature</div>
                 <div class="status-range">
-                    <span class="range-label">Normal:</span> 28–32°C
+                    <span class="range-label">Normal:</span> 24-29°C
                 </div>
                 <div class="status-message" id="suhu-message">Monitoring temperature</div>
             </div>
@@ -78,7 +78,7 @@
                 <div class="status-value" id="kekeruhan-value">-- NTU</div>
                 <div class="status-label">Turbidity</div>
                 <div class="status-range">
-                    <span class="range-label">Normal:</span> 25–400 NTU
+                    <span class="range-label">Normal:</span> 5-30 NTU
                 </div>
                 <div class="status-message" id="kekeruhan-message">Monitoring turbidity</div>
             </div>
@@ -476,7 +476,7 @@
             ph: null,
             suhu: null,
             kekeruhan: null,
-            quality: null,
+            kualitas: null,
             parameter_statuses: null,
             overall_status: null
         };
@@ -523,13 +523,14 @@
             document.getElementById('ph-value').textContent = data.ph?.toFixed(1) || '--';
             document.getElementById('suhu-value').textContent = data.suhu?.toFixed(1) + '°C' || '--°C';
             document.getElementById('kekeruhan-value').textContent = data.kekeruhan?.toFixed(1) + ' NTU' || '-- NTU';
-            document.getElementById('overall-quality-value').textContent = data.quality ? Math.round(data.quality) + '%' :
+            document.getElementById('overall-quality-value').textContent = data.kualitas ? Math.round(data.kualitas) + '%' :
                 '--%';
 
             // Update status badges and styling
             updateParameterStatus('ph', data.parameter_statuses?.ph);
             updateParameterStatus('suhu', data.parameter_statuses?.suhu);
             updateParameterStatus('kekeruhan', data.parameter_statuses?.kekeruhan);
+            updateParameterStatus('kualitas', data.parameter_statuses?.kualitas);
 
             // Update overall status
             updateOverallStatus(data.overall_status);

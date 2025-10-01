@@ -24,11 +24,8 @@ class DashboardController extends Controller
 
         $latest = $sensorData->first();
 
-        // Calculate quality for the latest data
-        $quality = round($this->calculateFuzzyQuality($latest->ph, $latest->suhu, $latest->kekeruhan), 2);
-
         // Get parameter statuses and overall status
-        $parameterStatuses = QualityHelper::getAllParameterStatuses($latest->ph, $latest->suhu, $latest->kekeruhan);
+        $parameterStatuses = QualityHelper::getAllParameterStatuses($latest->ph, $latest->suhu, $latest->kekeruhan, $latest->kualitas);
         $overallStatus = QualityHelper::getOverallStatus($parameterStatuses);
 
         // Format the latest data with all required fields
@@ -37,8 +34,8 @@ class DashboardController extends Controller
             'ph' => $latest->ph,
             'suhu' => $latest->suhu,
             'kekeruhan' => $latest->kekeruhan,
-            'kualitas' => $quality,
-            'quality' => $quality,
+            'kualitas' => $latest->kualitas,
+            'quality' => $latest->kualitas,
             'created_at' => $latest->created_at,
             'updated_at' => $latest->updated_at,
             'parameter_statuses' => $parameterStatuses,
@@ -235,9 +232,9 @@ class DashboardController extends Controller
         $rule_outputs = ['buruk' => 0, 'sedang' => 0, 'baik' => 0];
         foreach ($rules as $rule) {
             [$ph_key, $suhu_key, $keruh_key, $output_label] = $rule;
-            $mu_ph = ${'ph_'.$ph_key};
-            $mu_suhu = ${'suhu_'.$suhu_key};
-            $mu_keruh = ${'keruh_'.$keruh_key};
+            $mu_ph = ${'ph_' . $ph_key};
+            $mu_suhu = ${'suhu_' . $suhu_key};
+            $mu_keruh = ${'keruh_' . $keruh_key};
             $mu = min($mu_ph, $mu_suhu, $mu_keruh);
             $rule_outputs[$output_label] += $mu;
         }

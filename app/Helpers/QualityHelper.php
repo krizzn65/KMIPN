@@ -6,7 +6,7 @@ class QualityHelper
 {
     /**
      * Determine parameter status based on thresholds
-     * 
+     *
      * @param string $parameter
      * @param float $value
      * @return array
@@ -14,7 +14,7 @@ class QualityHelper
     public static function determineParameterStatus(string $parameter, float $value): array
     {
         $thresholds = self::getThresholds();
-        
+
         if (!isset($thresholds[$parameter])) {
             return [
                 'status' => 'unknown',
@@ -74,42 +74,42 @@ class QualityHelper
 
     /**
      * Get parameter thresholds for vaname shrimp ponds
-     * 
+     *
      * @return array
      */
     public static function getThresholds(): array
     {
         return [
             'ph' => [
-                'normal_low' => 7.5,
+                'normal_low' => 6.8,
                 'normal_high' => 8.5,
-                'warning_low' => 7.0,
-                'warning_high' => 7.4,
+                'warning_low' => 6.5,
+                'warning_high' => 6.7,
                 'danger_low' => 9.0,
                 'danger_high' => 9.0
             ],
             'suhu' => [
-                'normal_low' => 28,
-                'normal_high' => 32,
-                'warning_low' => 26,
-                'warning_high' => 27.9,
-                'danger_low' => 34,
-                'danger_high' => 34
+                'normal_low' => 24.0,
+                'normal_high' => 29.0,
+                'warning_low' => 22.0,
+                'warning_high' => 23.9,
+                'danger_low' => 32.0,
+                'danger_high' => 32.0
             ],
             'kekeruhan' => [
-                'normal_low' => 0,
-                'normal_high' => 400,
-                'warning_low' => 401,
-                'warning_high' => 600,
-                'danger_low' => 600,
-                'danger_high' => 1000
+                'normal_low' => 5.0,
+                'normal_high' => 30.0,
+                'warning_low' => 0.0,
+                'warning_high' => 4.9,
+                'danger_low' => 60.0,
+                'danger_high' => 60.0
             ]
         ];
     }
 
     /**
      * Get status icon based on parameter and status
-     * 
+     *
      * @param string $parameter
      * @param string $status
      * @return string
@@ -139,7 +139,7 @@ class QualityHelper
 
     /**
      * Get status message based on parameter, value and status
-     * 
+     *
      * @param string $parameter
      * @param float $value
      * @param string $status
@@ -166,13 +166,13 @@ class QualityHelper
         ];
 
         $unit = self::getParameterUnit($parameter);
-        
+
         return sprintf("%s (%.1f%s)", $messages[$parameter][$status], $value, $unit);
     }
 
     /**
      * Get parameter unit
-     * 
+     *
      * @param string $parameter
      * @return string
      */
@@ -189,7 +189,7 @@ class QualityHelper
 
     /**
      * Get all parameter statuses for a sensor reading
-     * 
+     *
      * @param float $ph
      * @param float $suhu
      * @param float $kekeruhan
@@ -206,7 +206,7 @@ class QualityHelper
 
     /**
      * Get overall water quality status based on individual parameter statuses
-     * 
+     *
      * @param array $parameterStatuses
      * @return array
      */

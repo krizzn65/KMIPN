@@ -52,7 +52,7 @@ class SyncExternalDatabaseCommand extends Command
                 $this->line('   Table: sensors');
             }
         } catch (\Exception $e) {
-            $this->error('✗ Cannot access phpMyAdmin interface: '.$e->getMessage());
+            $this->error('✗ Cannot access phpMyAdmin interface: ' . $e->getMessage());
         }
 
         $this->info('Synchronization process outlined. Manual intervention required for direct database sync.');

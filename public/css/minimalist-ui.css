@@ -9,25 +9,25 @@
     --sidebar-color: #ffffff;
     --highlight-color: #007BFF;
     --border-color: #ECF0F1;
-    
+
     /* Status Colors (fixed regardless of theme) */
     --success-color: #27AE60;
     --warning-color: #F39C12;
     --danger-color: #E74C3C;
-    
+
     /* Additional Colors */
     --primary-color: #2C3E50;
     --secondary-color: #95A5A6;
     --accent-color: #3498DB;
     --surface-color: #FFFFFF;
-    
+
     /* Typography */
     --font-family: 'Inter', 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-weight-light: 300;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
-    
+
     /* Spacing */
     --space-xs: 4px;
     --space-sm: 8px;
@@ -36,13 +36,13 @@
     --space-xl: 32px;
     --space-2xl: 48px;
     --space-3xl: 64px;
-    
+
     /* Border Radius */
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
     --border-radius-lg: 12px;
     --border-radius-xl: 16px;
-    
+
     /* Shadows */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -60,7 +60,7 @@
     --sidebar-color: #252525;
     --highlight-color: #3399FF;
     --border-color: #404040;
-    
+
     /* Additional Colors for Dark Mode */
     --primary-color: #ffffff;
     --secondary-color: #bdc3c7;
@@ -87,19 +87,41 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: var(--font-weight-semibold);
     line-height: 1.2;
     margin-bottom: var(--space-md);
     color: var(--text-primary);
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.75rem; }
-h4 { font-size: 1.5rem; }
-h5 { font-size: 1.25rem; }
-h6 { font-size: 1rem; }
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
 
 p {
     margin-bottom: var(--space-md);
@@ -314,23 +336,65 @@ p {
 }
 
 /* Utility Classes */
-.mb-1 { margin-bottom: var(--space-sm); }
-.mb-2 { margin-bottom: var(--space-md); }
-.mb-3 { margin-bottom: var(--space-lg); }
-.mb-4 { margin-bottom: var(--space-xl); }
-.mb-5 { margin-bottom: var(--space-2xl); }
+.mb-1 {
+    margin-bottom: var(--space-sm);
+}
 
-.mt-1 { margin-top: var(--space-sm); }
-.mt-2 { margin-top: var(--space-md); }
-.mt-3 { margin-top: var(--space-lg); }
-.mt-4 { margin-top: var(--space-xl); }
-.mt-5 { margin-top: var(--space-2xl); }
+.mb-2 {
+    margin-bottom: var(--space-md);
+}
 
-.p-1 { padding: var(--space-sm); }
-.p-2 { padding: var(--space-md); }
-.p-3 { padding: var(--space-lg); }
-.p-4 { padding: var(--space-xl); }
-.p-5 { padding: var(--space-2xl); }
+.mb-3 {
+    margin-bottom: var(--space-lg);
+}
+
+.mb-4 {
+    margin-bottom: var(--space-xl);
+}
+
+.mb-5 {
+    margin-bottom: var(--space-2xl);
+}
+
+.mt-1 {
+    margin-top: var(--space-sm);
+}
+
+.mt-2 {
+    margin-top: var(--space-md);
+}
+
+.mt-3 {
+    margin-top: var(--space-lg);
+}
+
+.mt-4 {
+    margin-top: var(--space-xl);
+}
+
+.mt-5 {
+    margin-top: var(--space-2xl);
+}
+
+.p-1 {
+    padding: var(--space-sm);
+}
+
+.p-2 {
+    padding: var(--space-md);
+}
+
+.p-3 {
+    padding: var(--space-lg);
+}
+
+.p-4 {
+    padding: var(--space-xl);
+}
+
+.p-5 {
+    padding: var(--space-2xl);
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -339,15 +403,23 @@ p {
         --space-2xl: 32px;
         --space-3xl: 48px;
     }
-    
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.75rem; }
-    h3 { font-size: 1.5rem; }
-    
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
     .container-centered {
         padding: 0 var(--space-md);
     }
-    
+
     .card {
         padding: var(--space-lg);
     }
@@ -355,13 +427,27 @@ p {
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideIn {
-    from { transform: translateX(-20px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 .animate-fadeIn {
@@ -391,8 +477,13 @@ p {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Sidebar Navigation - Minimalist Elegant Design */
@@ -470,7 +561,8 @@ p {
     padding: var(--space-md) var(--space-lg);
     text-decoration: none;
     color: var(--icon-color);
-    border-radius: var(--border-radius-lg); /* Pill-shaped corners */
+    border-radius: var(--border-radius-lg);
+    /* Pill-shaped corners */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: var(--font-weight-medium);
     gap: var(--space-md);
@@ -541,16 +633,16 @@ p {
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
     }
-    
+
     .sidebar.open {
         transform: translateX(0);
         box-shadow: var(--shadow-lg);
     }
-    
+
     .main-content {
         margin-left: 0;
     }
-    
+
     .sidebar-toggle {
         position: fixed;
         top: var(--space-md);
@@ -567,7 +659,7 @@ p {
         box-shadow: var(--shadow-sm);
         transition: all 0.3s ease;
     }
-    
+
     .sidebar-toggle:hover {
         background: var(--background-color);
         transform: scale(1.05);
