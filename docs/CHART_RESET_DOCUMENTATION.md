@@ -52,7 +52,7 @@ This implementation provides automatic reset of chart data at midnight (00:00) e
 
 1. Run the command: `php artisan chart:reset-daily`
 2. Check schedule: `php artisan schedule:list`
-3. Test JavaScript: Open `test_midnight_reset.html` in browser
+3. Test JavaScript: Open `utility-scripts/test_midnight_reset.html` in browser
 
 ### Automated Testing
 
@@ -92,7 +92,7 @@ Reset actions are logged to Laravel's log file (`storage/logs/laravel.log`).
 
 1. Check browser console for errors
 2. Verify localStorage is enabled
-3. Test with `test_midnight_reset.html`
+3. Test with `utility-scripts/test_midnight_reset.html`
 
 ### Time Zone Issues
 

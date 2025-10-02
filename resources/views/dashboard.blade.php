@@ -838,11 +838,11 @@
         // Initialize everything
         document.addEventListener('DOMContentLoaded', function() {
             updateTime();
-            setInterval(updateTime, 1000);
+            setInterval(updateTime, 4000);
 
-            // Fetch data immediately and then every 5 seconds
+            // Fetch data immediately and then every 4000 seconds
             fetchSensorData();
-            setInterval(fetchSensorData, 5000);
+            setInterval(fetchSensorData, 4000);
 
             // Check water quality every 30 seconds
             setInterval(checkWaterQuality, 30000);
