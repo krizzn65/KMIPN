@@ -75,12 +75,13 @@
                     </div>
                     <span class="status-badge" id="kekeruhan-status-badge">Normal</span>
                 </div>
-                <div class="status-value" id="kekeruhan-value">-- NTU</div>
-                <div class="status-label">Turbidity</div>
-                <div class="status-range">
-                    <span class="range-label">Normal:</span> 5-30 NTU
-                </div>
-                <div class="status-message" id="kekeruhan-message">Monitoring turbidity</div>
+                <div class="status-value" id="kekeruhan-value">--%</div>
+<div class="status-label">Turbidity Level</div>
+<div class="status-range">
+    <span class="range-label">Normal:</span> 70% - 100%
+</div>
+<div class="status-message" id="kekeruhan-message">Monitoring turbidity</div>
+
             </div>
         </div>
 
@@ -522,7 +523,8 @@
             // Update parameter values
             document.getElementById('ph-value').textContent = data.ph?.toFixed(1) || '--';
             document.getElementById('suhu-value').textContent = data.suhu?.toFixed(1) + '°C' || '--°C';
-            document.getElementById('kekeruhan-value').textContent = data.kekeruhan?.toFixed(1) + ' NTU' || '-- NTU';
+            document.getElementById('kekeruhan-value').textContent =
+    data.kekeruhan?.toFixed(1) + '%' || '--%';
             document.getElementById('overall-quality-value').textContent = data.kualitas ? Math.round(data.kualitas) + '%' :
                 '--%';
 
@@ -673,13 +675,14 @@
                                 fill: true
                             },
                             {
-                                label: 'Turbidity (NTU)',
+                                label: 'Turbidity (%)',
                                 data: chartData.datasets?.kekeruhan || [],
                                 borderColor: '#F39C12',
                                 backgroundColor: 'rgba(243, 156, 18, 0.1)',
                                 tension: 0.4,
                                 fill: true
                             }
+
                         ]
                     },
                     options: {

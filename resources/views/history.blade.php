@@ -26,7 +26,7 @@
                     <option value="all">All Parameters</option>
                     <option value="ph">pH Level</option>
                     <option value="suhu">Temperature</option>
-                    <option value="kekeruhan">Turbidity</option>
+                    <option value="kekeruhan">Turbidity (%)</option>
                 </select>
             </div>
 
@@ -42,12 +42,10 @@
 
             <button class="btn btn-primary" id="apply-filters">
                 <i class="fas fa-filter"></i> Apply Filters
-
             </button>
 
             <button class="btn btn-outline" id="export-data">
-                <i class="fas fa-download"></i>
-                Export CSV
+                <i class="fas fa-download"></i> Export CSV
             </button>
         </div>
 
@@ -58,9 +56,7 @@
         </div>
 
         <!-- Historical Records Grid -->
-        <div class="history-grid" id="history-grid">
-            <!-- Data will be populated by JavaScript -->
-        </div>
+        <div class="history-grid" id="history-grid"></div>
 
         <!-- No Data Message -->
         <div class="no-records" id="no-records" style="display: none;">
@@ -70,9 +66,7 @@
         </div>
 
         <!-- Pagination -->
-        <div class="pagination" id="pagination">
-            <!-- Pagination will be populated by JavaScript -->
-        </div>
+        <div class="pagination" id="pagination"></div>
 
         <!-- Footer -->
         <div class="dashboard-footer">
@@ -81,310 +75,318 @@
     </div>
 
     <style>
-        .btn.btn-primary {
-            background-color: #1e88e5;
-            color: white;
-            border: none;
-        }
+/* === Button Styles === */
+.btn.btn-primary {
+  background-color: #1e88e5;
+  color: white;
+  border: none;
+}
 
-        .btn.btn-primary:hover {
-            background-color: #1976d2;
-        }
+.btn.btn-primary:hover {
+  background-color: #1976d2;
+}
 
-        .btn.btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
+.btn.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
 
-        .btn.btn-outline:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
+.btn.btn-outline:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
 
-        .history-content {
-            padding: var(--space-xl) 0;
-        }
+/* === History Section === */
+.history-content {
+  padding: var(--space-xl) 0;
+}
 
-        .history-header {
-            text-align: center;
-            margin-bottom: var(--space-2xl);
-            animation: fadeIn 0.8s ease-out;
-        }
+.history-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  animation: fadeIn 0.8s ease-out;
+}
 
-        .history-title {
-            font-size: 2.5rem;
-            font-weight: var(--font-weight-semibold);
-            color: var(--primary-color);
-            margin-bottom: var(--space-sm);
-        }
+.history-title {
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-color);
+  margin-bottom: var(--space-sm);
+}
 
-        .history-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto var(--space-lg);
-        }
+.history-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto var(--space-lg);
+}
 
-        /* Filter Controls */
-        .filter-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-md);
-            margin-bottom: var(--space-2xl);
-            align-items: end;
-        }
+/* === Filter Controls === */
+.filter-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+  align-items: end;
+}
 
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-xs);
-        }
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
 
-        .filter-label {
-            font-size: 0.9rem;
-            font-weight: var(--font-weight-medium);
-            color: var(--text-primary);
-        }
+.filter-label {
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
 
-        .filter-select {
-            padding: var(--space-sm) var(--space-md);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            background: var(--card-color);
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            color: var(--text-primary);
-        }
+.filter-select {
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--card-color);
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
 
-        .filter-select:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
+.filter-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
 
-        /* Loading Container */
-        .loading-container {
-            text-align: center;
-            padding: var(--space-3xl);
-            color: var(--text-secondary);
-        }
+/* === Loading Container === */
+.loading-container {
+  text-align: center;
+  padding: var(--space-3xl);
+  color: var(--text-secondary);
+}
 
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border-color);
-            border-top: 3px solid var(--accent-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto var(--space-md);
-        }
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto var(--space-md);
+}
 
-        /* History Grid */
-        .history-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: var(--space-lg);
-            margin-bottom: var(--space-3xl);
-        }
+/* === History Grid === */
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-3xl);
+}
 
-        .history-card {
-            position: relative;
-            transition: all 0.3s ease;
-        }
+.history-card {
+  position: relative;
+  transition: all 0.3s ease;
+}
 
-        .history-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
+.history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-md);
-            padding-bottom: var(--space-sm);
-            border-bottom: 1px solid var(--border-color);
-        }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-color);
+}
 
-        .card-date {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: var(--font-weight-medium);
-        }
+.card-date {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
 
-        .card-time {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            opacity: 0.8;
-        }
+.card-time {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
 
-        .parameter-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--space-md);
-            margin-bottom: var(--space-lg);
-        }
+/* === Parameter Grid === */
+.parameter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
 
-        .parameter-item {
-            text-align: center;
-            padding: var(--space-md);
-            background: var(--card-color);
-            border-radius: var(--border-radius-md);
-            position: relative;
-            border: 1px solid var(--border-color);
-        }
+.parameter-item {
+  text-align: center;
+  padding: var(--space-md);
+  background: var(--card-color);
+  border-radius: var(--border-radius-md);
+  position: relative;
+  border: 1px solid var(--border-color);
+}
 
-        .parameter-value {
-            font-size: 1.2rem;
-            font-weight: var(--font-weight-semibold);
-            margin-bottom: var(--space-xs);
-        }
+.parameter-value {
+  font-size: 1.2rem;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-xs);
+}
 
-        .parameter-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-xs);
-        }
+.parameter-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+}
 
-        .parameter-status {
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: inline-block;
-            font-weight: var(--font-weight-medium);
-        }
+.parameter-status {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  font-weight: var(--font-weight-medium);
+}
 
-        .status-normal {
-            background: rgba(39, 174, 96, 0.1);
-            color: var(--success-color);
-        }
+/* === Status Colors === */
+.status-normal {
+  background: rgba(39, 174, 96, 0.1);
+  color: var(--success-color);
+}
 
-        .status-warning {
-            background: rgba(243, 156, 18, 0.1);
-            color: var(--warning-color);
-        }
+.status-warning {
+  background: rgba(243, 156, 18, 0.1);
+  color: var(--warning-color);
+}
 
-        .status-danger {
-            background: rgba(231, 76, 60, 0.1);
-            color: var(--danger-color);
-        }
+.status-danger {
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--danger-color);
+}
 
-        .quality-score {
-            text-align: center;
-            padding: var(--space-md);
-            background: var(--card-color);
-            border-radius: var(--border-radius-md);
-            margin-bottom: var(--space-md);
-            border: 1px solid var(--border-color);
-        }
+/* === Quality Score === */
+.quality-score {
+  text-align: center;
+  padding: var(--space-md);
+  background: var(--card-color);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--space-md);
+  border: 1px solid var(--border-color);
+}
 
-        .quality-value {
-            font-size: 1.5rem;
-            font-weight: var(--font-weight-semibold);
-            color: var(--success-color);
-        }
+.quality-value {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--success-color);
+}
 
-        .quality-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
+.quality-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
 
-        .overall-status {
-            text-align: center;
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--border-radius-md);
-            font-weight: var(--font-weight-medium);
-            margin-top: var(--space-md);
-        }
+.overall-status {
+  text-align: center;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--space-md);
+}
 
-        /* Color variations for parameter values */
-        .ph-value {
-            color: #3498DB;
-        }
+/* === Color Variations for Parameter Values === */
+.ph-value {
+  color: #3498db;
+}
 
-        .temp-value {
-            color: #27AE60;
-        }
+.temp-value {
+  color: #27ae60;
+}
 
-        .turbidity-value {
-            color: #F39C12;
-        }
+.turbidity-value {
+  color: #f39c12;
+}
 
-        /* No Records */
-        .no-records {
-            text-align: center;
-            color: var(--text-secondary);
-            padding: var(--space-3xl);
-            font-style: italic;
-        }
+/* === No Records === */
+.no-records {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--space-3xl);
+  font-style: italic;
+}
 
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: var(--space-sm);
-            margin-top: var(--space-2xl);
-            margin-bottom: var(--space-xl);
-        }
+/* === Pagination === */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-xl);
+}
 
-        .page-btn {
-            padding: var(--space-sm) var(--space-md);
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            background: var(--card-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-        }
+.page-btn {
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--card-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
 
-        .page-btn:hover,
-        .page-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
+.page-btn:hover,
+.page-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
 
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-        @media (max-width: 768px) {
-            .history-grid {
-                grid-template-columns: 1fr;
-                gap: var(--space-md);
-            }
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .history-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
 
-            .history-title {
-                font-size: 2rem;
-            }
+  .history-title {
+    font-size: 2rem;
+  }
 
-            .filter-controls {
-                grid-template-columns: 1fr;
-                gap: var(--space-md);
-            }
+  .filter-controls {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
 
-            .parameter-grid {
-                grid-template-columns: 1fr;
-            }
+  .parameter-grid {
+    grid-template-columns: 1fr;
+  }
 
-            .card-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--space-xs);
-            }
-        }
-    </style>
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+}
+</style>
 
+
+    {{-- ================= JS ================= --}}
     <script>
         let currentPage = 1;
         const itemsPerPage = 6;
         let allData = [];
         let filteredData = [];
 
-        // Initialize everything
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             loadHistoryData();
             setupEventListeners();
@@ -394,16 +396,6 @@
         function setupEventListeners() {
             document.getElementById('apply-filters').addEventListener('click', applyFilters);
             document.getElementById('export-data').addEventListener('click', exportToCSV);
-
-            // Add enter key support for filters
-            const filterInputs = document.querySelectorAll('.filter-select');
-            filterInputs.forEach(input => {
-                input.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        applyFilters();
-                    }
-                });
-            });
         }
 
         // Load history data
@@ -413,7 +405,6 @@
             try {
                 const response = await fetch('/history/data');
                 const data = await response.json();
-
                 allData = data;
                 applyFilters();
             } catch (error) {
@@ -427,7 +418,6 @@
         // Apply filters
         function applyFilters() {
             const timeRange = document.getElementById('time-range').value;
-            const parameter = document.getElementById('parameter-filter').value;
             const status = document.getElementById('status-filter').value;
 
             filteredData = allData.filter(item => {
@@ -463,7 +453,6 @@
             renderPagination();
         }
 
-        // Check if date is today
         function isToday(date) {
             const today = new Date();
             return date.getDate() === today.getDate() &&
@@ -471,7 +460,7 @@
                 date.getFullYear() === today.getFullYear();
         }
 
-        // Render history data
+        // Render history cards
         function renderHistoryData() {
             const container = document.getElementById('history-grid');
             const noRecords = document.getElementById('no-records');
@@ -489,66 +478,61 @@
             const pageData = filteredData.slice(startIndex, endIndex);
 
             container.innerHTML = pageData.map(item => `
-            <div class="card history-card">
-                <div class="card-header">
-                    <span class="card-date">${item.created_at.split(',')[0]}</span>
-                    <span class="card-time">${item.created_at.split(',')[1]}</span>
-                </div>
-
-                <div class="parameter-grid">
-                    <div class="parameter-item">
-                        <div class="parameter-value ph-value">${item.ph?.toFixed(1) || '--'}</div>
-                        <div class="parameter-label">pH Level</div>
-                        <span class="parameter-status status-${item.parameter_statuses?.ph?.status?.toLowerCase() || 'normal'}">
-                            ${item.parameter_statuses?.ph?.status || 'Normal'}
-                        </span>
+                <div class="card history-card">
+                    <div class="card-header">
+                        <span class="card-date">${item.created_at.split(',')[0]}</span>
+                        <span class="card-time">${item.created_at.split(',')[1]}</span>
                     </div>
 
-                    <div class="parameter-item">
-                        <div class="parameter-value temp-value">${item.suhu?.toFixed(1) || '--'}°C</div>
-                        <div class="parameter-label">Temperature</div>
-                        <span class="parameter-status status-${item.parameter_statuses?.suhu?.status?.toLowerCase() || 'normal'}">
-                            ${item.parameter_statuses?.suhu?.status || 'Normal'}
-                        </span>
+                    <div class="parameter-grid">
+                        <div class="parameter-item">
+                            <div class="parameter-value ph-value">${item.ph?.toFixed(1) || '--'}</div>
+                            <div class="parameter-label">pH Level</div>
+                            <span class="parameter-status status-${item.parameter_statuses?.ph?.status?.toLowerCase() || 'normal'}">
+                                ${item.parameter_statuses?.ph?.status || 'Normal'}
+                            </span>
+                        </div>
+
+                        <div class="parameter-item">
+                            <div class="parameter-value temp-value">${item.suhu?.toFixed(1) || '--'}°C</div>
+                            <div class="parameter-label">Temperature</div>
+                            <span class="parameter-status status-${item.parameter_statuses?.suhu?.status?.toLowerCase() || 'normal'}">
+                                ${item.parameter_statuses?.suhu?.status || 'Normal'}
+                            </span>
+                        </div>
+
+                        <div class="parameter-item">
+                            <div class="parameter-value turbidity-value">${item.kekeruhan?.toFixed(1) || '--'}%</div>
+                            <div class="parameter-label">Turbidity (%)</div>
+                            <span class="parameter-status status-${item.parameter_statuses?.kekeruhan?.status?.toLowerCase() || 'normal'}">
+                                ${item.parameter_statuses?.kekeruhan?.status || 'Normal'}
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="parameter-item">
-                        <div class="parameter-value turbidity-value">${item.kekeruhan?.toFixed(1) || '--'} NTU</div>
-                        <div class="parameter-label">Turbidity</div>
-                        <span class="parameter-status status-${item.parameter_statuses?.kekeruhan?.status?.toLowerCase() || 'normal'}">
-                            ${item.parameter_statuses?.kekeruhan?.status || 'Normal'}
-                        </span>
+                    <div class="quality-score">
+                        <div class="quality-value">${item.kualitas ? Math.round(item.kualitas) + '%' : '--%'}</div>
+                        <div class="quality-label">Water Quality Score</div>
+                    </div>
+
+                    <div class="overall-status status-${item.status_kualitas_air?.toLowerCase() || 'normal'}">
+                        <i class="fas ${getStatusIcon(item.status_kualitas_air)}"></i>
+                        ${item.status_kualitas_air || 'Normal'} Quality
                     </div>
                 </div>
-
-                <div class="quality-score">
-                    <div class="quality-value">${item.kualitas ? Math.round(item.kualitas) + '%' : '--%'}</div>
-                    <div class="quality-label">Water Quality Score</div>
-                </div>
-
-                <div class="overall-status status-${item.status_kualitas_air?.toLowerCase() || 'normal'}">
-                    <i class="fas ${getStatusIcon(item.status_kualitas_air)}"></i>
-                    ${item.status_kualitas_air || 'Normal'} Quality
-                </div>
-            </div>
-        `).join('');
+            `).join('');
         }
 
-        // Get status icon
         function getStatusIcon(status) {
             switch (status?.toLowerCase()) {
-                case 'danger':
-                    return 'fa-exclamation-triangle';
-                case 'warning':
-                    return 'fa-exclamation-circle';
-                case 'normal':
-                    return 'fa-check-circle';
-                default:
-                    return 'fa-question-circle';
+                case 'danger': return 'fa-exclamation-triangle';
+                case 'warning': return 'fa-exclamation-circle';
+                case 'normal': return 'fa-check-circle';
+                default: return 'fa-question-circle';
             }
         }
 
-        // Render pagination
+        // Pagination
         function renderPagination() {
             const pagination = document.getElementById('pagination');
             const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -558,61 +542,46 @@
                 return;
             }
 
-            let paginationHTML = `
-            <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                <i class="fas fa-chevron-left"></i>
-            </button>
-        `;
+            let html = `
+                <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>`;
 
             for (let i = 1; i <= totalPages; i++) {
-                paginationHTML += `
-                <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
-                    ${i}
-                </button>
-            `;
+                html += `
+                    <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                        ${i}
+                    </button>`;
             }
 
-            paginationHTML += `
-            <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        `;
+            html += `
+                <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>`;
 
-            pagination.innerHTML = paginationHTML;
+            pagination.innerHTML = html;
         }
 
-        // Change page
         function changePage(page) {
             const totalPages = Math.ceil(filteredData.length / itemsPerPage);
             if (page < 1 || page > totalPages) return;
-
             currentPage = page;
             renderHistoryData();
             renderPagination();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Export to CSV
         function exportToCSV() {
-            if (filteredData.length === 0) {
-                alert('No data to export');
-                return;
-            }
+            if (filteredData.length === 0) return alert('No data to export');
 
-            const headers = ['Date', 'Time', 'pH', 'pH Status', 'Temperature', 'Temp Status', 'Turbidity',
-                'Turbidity Status', 'Quality Score', 'Overall Status'
-            ];
-
+            const headers = ['Date', 'Time', 'pH', 'pH Status', 'Temperature', 'Temp Status', 'Turbidity (%)', 'Turbidity Status', 'Quality Score', 'Overall Status'];
             const csvData = [
                 headers,
                 ...filteredData.map(item => {
                     const [date, time] = item.created_at.split(', ');
                     return [
-                        date,
-                        time,
+                        date, time,
                         item.ph?.toFixed(1) || '',
                         item.parameter_statuses?.ph?.status || '',
                         item.suhu?.toFixed(1) || '',
@@ -625,45 +594,35 @@
                 })
             ];
 
-            const csvContent = csvData.map(row => row.map(field => `"${field}"`).join(',')).join('\n');
-            const blob = new Blob([csvContent], {
-                type: 'text/csv;charset=utf-8;'
-            });
+            const csvContent = csvData.map(row => row.map(f => `"${f}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
-
             link.setAttribute('href', url);
-            link.setAttribute('download', `aquamonitor-data-${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute('download', `aquamonitor-history-${new Date().toISOString().split('T')[0]}.csv`);
             link.style.visibility = 'hidden';
-
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
-        // Show/hide loading indicator
         function showLoading(show) {
             document.getElementById('loading-container').style.display = show ? 'block' : 'none';
             document.getElementById('history-grid').style.display = show ? 'none' : 'grid';
         }
 
-        // Show error message
         function showError(message) {
-            const container = document.getElementById('history-grid');
-            container.innerHTML = `
-            <div class="card" style="grid-column: 1 / -1; text-align: center; color: var(--danger-color);">
-                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: var(--space-md);"></i>
-                <h3>Error Loading Data</h3>
-                <p>${message}</p>
-                <button class="btn btn-primary" onclick="loadHistoryData()" style="margin-top: var(--space-md);">
-                    <i class="fas fa-refresh"></i>
-                    Try Again
-                </button>
-            </div>
-        `;
+            document.getElementById('history-grid').innerHTML = `
+                <div class="card" style="grid-column: 1 / -1; text-align: center; color: var(--danger-color);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: var(--space-md);"></i>
+                    <h3>Error Loading Data</h3>
+                    <p>${message}</p>
+                    <button class="btn btn-primary" onclick="loadHistoryData()" style="margin-top: var(--space-md);">
+                        <i class="fas fa-refresh"></i> Try Again
+                    </button>
+                </div>`;
         }
 
-        // Global functions for pagination
         window.changePage = changePage;
     </script>
 @endsection

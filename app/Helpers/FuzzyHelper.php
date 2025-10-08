@@ -24,13 +24,13 @@ class FuzzyHelper
         ];
     }
 
-    // Fungsi membership kekeruhan
+    // Fungsi membership kekeruhan (0–100%)
     private static function kekeruhanMembership($kekeruhan)
     {
         return [
-            'jernih' => $kekeruhan <= 10 ? 1 : ($kekeruhan < 15 ? (15 - $kekeruhan) / 5 : 0),
-            'normal' => ($kekeruhan >= 15 && $kekeruhan <= 30) ? 1 : (($kekeruhan > 10 && $kekeruhan < 15) ? ($kekeruhan - 10) / 5 : (($kekeruhan > 30 && $kekeruhan < 35) ? (35 - $kekeruhan) / 5 : 0)),
-            'keruh' => $kekeruhan >= 35 ? 1 : ($kekeruhan > 30 ? ($kekeruhan - 30) / 5 : 0),
+            'jernih' => $kekeruhan <= 30 ? 1 : ($kekeruhan < 50 ? (50 - $kekeruhan) / 20 : 0),
+            'normal' => ($kekeruhan >= 50 && $kekeruhan <= 80) ? 1 : (($kekeruhan > 30 && $kekeruhan < 50) ? ($kekeruhan - 30) / 20 : (($kekeruhan > 80 && $kekeruhan < 90) ? (90 - $kekeruhan) / 10 : 0)),
+            'keruh' => $kekeruhan >= 90 ? 1 : ($kekeruhan > 80 ? ($kekeruhan - 80) / 10 : 0),
         ];
     }
 
@@ -41,15 +41,14 @@ class FuzzyHelper
         $suhuSet = self::suhuMembership($suhu);
         $kekeruhanSet = self::kekeruhanMembership($kekeruhan);
 
-        // Aturan fuzzy (semua kombinasi, hanya 3 aturan utama digunakan di contoh ini)
         $rules = [
-            ['ph' => 'normal', 'suhu' => 'normal', 'kekeruhan' => 'normal', 'output' => 100], // baik
-            ['ph' => 'normal', 'suhu' => 'normal', 'kekeruhan' => 'keruh', 'output' => 70],
+            ['ph' => 'normal', 'suhu' => 'normal', 'kekeruhan' => 'jernih', 'output' => 100],
+            ['ph' => 'normal', 'suhu' => 'normal', 'kekeruhan' => 'normal', 'output' => 85],
+            ['ph' => 'normal', 'suhu' => 'normal', 'kekeruhan' => 'keruh', 'output' => 60],
             ['ph' => 'rendah', 'suhu' => 'tinggi', 'kekeruhan' => 'keruh', 'output' => 40],
             ['ph' => 'tinggi', 'suhu' => 'tinggi', 'kekeruhan' => 'keruh', 'output' => 30],
-            ['ph' => 'rendah', 'suhu' => 'rendah', 'kekeruhan' => 'jernih', 'output' => 50],
-            ['ph' => 'normal', 'suhu' => 'rendah', 'kekeruhan' => 'normal', 'output' => 75],
-            ['ph' => 'tinggi', 'suhu' => 'normal', 'kekeruhan' => 'normal', 'output' => 85],
+            ['ph' => 'rendah', 'suhu' => 'rendah', 'kekeruhan' => 'jernih', 'output' => 70],
+            ['ph' => 'tinggi', 'suhu' => 'normal', 'kekeruhan' => 'normal', 'output' => 75],
         ];
 
         $numerator = 0;
