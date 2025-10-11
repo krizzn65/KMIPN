@@ -1,5 +1,7 @@
+i
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -10,7 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css/minimalist-ui.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title> Aqua Monitor</title>
+    <title> Wisanggeni</title>
 
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('build/assets/app-DqME6eCz.css') }}">
@@ -22,9 +24,10 @@
 
 
     <style>
-        
+
     </style>
 </head>
+
 <body>
     <!-- Sidebar Toggle Button (Mobile) -->
     <button class="sidebar-toggle" id="sidebarToggle">
@@ -36,7 +39,7 @@
         <!-- Logo -->
         <div class="sidebar-logo">
             <div class="logo-text">
-                <span class="logo-accent">A</span>QUA MONITOR
+                <span class="logo-accent">W</span>ISANGGENI
             </div>
         </div>
 
@@ -45,7 +48,8 @@
             <h3 class="section-title">Menu</h3>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="{{ url('/dashboard') }}" class="sidebar-link {{ request()->is('dashboard') ? 'active' : '' }}">
+                    <a href="{{ url('/dashboard') }}"
+                        class="sidebar-link {{ request()->is('dashboard') ? 'active' : '' }}">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
@@ -87,45 +91,46 @@
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const themeToggle = document.getElementById('theme-toggle');
-            
+
             // Sidebar toggle functionality
             sidebarToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('open');
             });
-            
+
             // Close sidebar when clicking outside on mobile
             document.addEventListener('click', function(event) {
                 if (window.innerWidth <= 1024) {
-                    if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target) && sidebar.classList.contains('open')) {
+                    if (!sidebar.contains(event.target) && !sidebarToggle.contains(event.target) && sidebar
+                        .classList.contains('open')) {
                         sidebar.classList.remove('open');
                     }
                 }
             });
-            
+
             // Theme switching functionality
             function initTheme() {
                 const savedTheme = localStorage.getItem('theme') || 'light';
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const theme = savedTheme === 'auto' ? (prefersDark ? 'dark' : 'light') : savedTheme;
-                
+
                 document.documentElement.setAttribute('data-theme', theme);
                 updateThemeToggle(theme);
             }
-            
+
             function toggleTheme() {
                 const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                
+
                 document.documentElement.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
                 updateThemeToggle(newTheme);
             }
-            
+
             function updateThemeToggle(theme) {
                 const themeToggle = document.getElementById('theme-toggle');
                 const icon = themeToggle.querySelector('i');
                 const text = themeToggle.querySelector('span');
-                
+
                 if (theme === 'dark') {
                     icon.className = 'fas fa-sun';
                     text.textContent = 'Light Mode';
@@ -134,10 +139,10 @@
                     text.textContent = 'Dark Mode';
                 }
             }
-            
+
             // Initialize theme
             initTheme();
-            
+
             // Add click event to theme toggle
             themeToggle.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -147,9 +152,9 @@
     </script>
 </body>
 
-     <script src="{{ asset('js/app.js') }}"></script>
-     
+<script src="{{ asset('js/app.js') }}"></script>
+
 
 </body>
+
 </html>
-    

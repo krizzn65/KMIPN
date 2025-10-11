@@ -16,28 +16,35 @@ class DashboardController extends Controller
 
     public function getSensorData()
     {
-        $sensorData = Sensor::orderBy('created_at', 'desc')->take(15)->get();
+        // Menggunakan model AvgSensor (pastikan Anda telah membuatnya)
+        // Jika belum, tambahkan use App\Models\AvgSensor; di bagian atas file
+        $avgSensorData = \App\Models\AvgSensor::latest('last_ts')->first();
 
-        if ($sensorData->isEmpty()) {
+        if (!$avgSensorData) {
             return response()->json([]);
         }
 
-        $latest = $sensorData->first();
-
         // Get parameter statuses and overall status
-        $parameterStatuses = QualityHelper::getAllParameterStatuses($latest->ph, $latest->suhu, $latest->kekeruhan, $latest->kualitas);
+        // Perhatikan kolom telah berubah dari suhu menjadi temp_c
+        $parameterStatuses = QualityHelper::getAllParameterStatuses(
+            $avgSensorData->ph,
+            $avgSensorData->temp_c,
+            $avgSensorData->kekeruhan,
+            $avgSensorData->kualitas ?? null
+        );
         $overallStatus = QualityHelper::getOverallStatus($parameterStatuses);
 
-        // Format the latest data with all required fields
+        // Format the latest data dengan struktur kolom yang sesuai
         $formattedLatest = [
-            'id' => $latest->id,
-            'ph' => $latest->ph,
-            'suhu' => $latest->suhu,
-            'kekeruhan' => $latest->kekeruhan,
-            'kualitas' => $latest->kualitas,
-            'quality' => $latest->kualitas,
-            'created_at' => $latest->created_at,
-            'updated_at' => $latest->updated_at,
+            'id' => $avgSensorData->id,
+            'ph' => $avgSensorData->ph,
+            'suhu' => $avgSensorData->temp_c, // Mapping temp_c ke suhu untuk kompatibilitas
+            'kekeruhan' => $avgSensorData->kekeruhan,
+            'kualitas' => $avgSensorData->kualitas ?? null,
+            'quality' => $avgSensorData->kualitas ?? null,
+            'created_at' => $avgSensorData->created_at,
+            'updated_at' => $avgSensorData->updated_at,
+            'last_ts' => $avgSensorData->last_ts,
             'parameter_statuses' => $parameterStatuses,
             'overall_status' => $overallStatus,
         ];

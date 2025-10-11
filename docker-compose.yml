@@ -1,36 +1,181 @@
-version: '3.8'
-
-services:
-    app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        container_name: kmipn-app
-        restart: unless-stopped
-        working_dir: /var/www
-        volumes:
-            - ./:/var/www
-        networks:
-            - iotnet
-
-    webserver:
-        image: nginx:alpine
-        container_name: kmipn-nginx
-        restart: unless-stopped
-        ports:
-            - "8080:80"
-        volumes:
-            - ./:/var/www
-            - ./docker-compose/nginx:/etc/nginx/conf.d
-        networks:
-            - iotnet
-        depends_on:
-            - app
+version: "3.8"
 
 networks:
-    iotnet:
-        driver: bridge
+    appnet:
+
 
 volumes:
+    laravel_data:
     mysql_data:
-        driver: local
+    n8n_data:
+    nginx_conf:
+
+
+services:
+    # 1) INIT: Tulis nginx.conf ke volume nginx_conf (sekali jalan)
+    nginx_conf_init:
+        image: alpine:3.20
+        command: >
+            sh -lc ' mkdir -p /etc/nginx/conf.d && cat > /etc/nginx/conf.d/default.conf << "EOF" server {
+                listen 80;
+                index index.php index.html;
+                root /var/www/html/public;
+
+                location / {
+                    try_files $uri $uri/ /index.php?$query_string;
+                }
+
+                location ~ \.php$ {
+                    fastcgi_pass laravel:9000;
+                    fastcgi_index index.php;
+                    include fastcgi_params;
+                    fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+                    fastcgi_param DOCUMENT_ROOT $realpath_root;
+                }
+
+                location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf)$ {
+                    expires 7d;
+                    access_log off;
+                    try_files $uri =404;
+                }
+
+                location ~ \.ht {
+                    deny all;
+                }
+            } EOF '
+        volumes:
+            - nginx_conf:/etc/nginx/conf.d
+        networks:
+            - appnet
+        restart: "no"
+
+    # 2) INIT: Clone kode Laravel ke volume laravel_data (sekali jalan)
+    code_fetcher:
+        image: alpine:3.20
+        working_dir: /work
+        command: >
+            sh -lc ' apk add --no-cache git && if [ -z "$(ls -A /var/www/html 2>/dev/null)" ]; then
+              git clone --depth=1 https://github.com/krizzn65/KMIPN.git /tmp/src &&
+              mkdir -p /var/www/html &&
+              cp -a /tmp/src/. /var/www/html;
+            fi && chown -R 33:33 /var/www/html '
+        volumes:
+            - laravel_data:/var/www/html
+        networks:
+            - appnet
+        restart: "no"
+
+    # 3) INIT: Composer install + generate APP_KEY (sekali jalan)
+    composer_install:
+        image: composer:2
+        working_dir: /var/www/html
+        environment:
+            COMPOSER_ALLOW_SUPERUSER: "1"
+        command: >
+            sh -lc ' composer install --no-interaction --prefer-dist && if [ ! -f .env ]; then cp .env.example .env || true; fi && php artisan key:generate && php artisan config:clear || true && php artisan cache:clear || true '
+        volumes:
+            - laravel_data:/var/www/html
+        networks:
+            - appnet
+        depends_on:
+            - code_fetcher
+        restart: "no"
+
+    # 4) PHP-FPM untuk Laravel
+    laravel:
+        image: thecodingmachine/php:8.2-v4-fpm
+        environment:
+            # Zona waktu & PHP config
+            PHP_EXTENSION_GD: "1"
+            PHP_EXTENSION_INTL: "1"
+            PHP_EXTENSION_EXIF: "1"
+            PHP_EXTENSION_PDO_MYSQL: "1"
+            PHP_EXTENSION_BCMATH: "1"
+            PHP_INI_DATE_TIMEZONE: "Asia/Jakarta"
+            # ENV Laravel (sesuaikan jika perlu)
+            APP_ENV: local
+            APP_DEBUG: "true"
+            APP_URL: http://localhost:7000
+            DB_CONNECTION: mysql
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_DATABASE: kmipn_db
+            DB_USERNAME: kmipnuser
+            DB_PASSWORD: kmipnpassword
+        volumes:
+            - laravel_data:/var/www/html
+        networks:
+            - appnet
+        expose:
+            - "9000"
+        depends_on:
+            - composer_install
+            - mysql
+        restart: unless-stopped
+
+    # 5) Nginx sebagai webserver Laravel
+    nginx:
+        image: nginx:alpine
+        ports:
+            - "7000:80"
+        volumes:
+            - laravel_data:/var/www/html:ro
+            - nginx_conf:/etc/nginx/conf.d
+        networks:
+            - appnet
+        depends_on:
+            - laravel
+            - nginx_conf_init
+        restart: unless-stopped
+
+    # 6) MySQL
+    mysql:
+        image: mysql:8.4
+        environment:
+            MYSQL_DATABASE: kmipn_db
+            MYSQL_USER: kmipnuser
+            MYSQL_PASSWORD: kmipnpassword
+            MYSQL_ROOT_PASSWORD: root
+            TZ: Asia/Jakarta
+        # Uncomment the following line only if legacy mysql_native_password is required by clients
+        # command: --default-authentication-plugin=mysql_native_password
+        volumes:
+            - mysql_data:/var/lib/mysql
+        networks:
+            - appnet
+        expose:
+            - "3306"
+        healthcheck:
+            test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -proot --silent" ]
+            interval: 5s
+            timeout: 3s
+            retries: 20
+        restart: unless-stopped
+
+    # 7) phpMyAdmin
+    phpmyadmin:
+        image: phpmyadmin:latest
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+        ports:
+            - "7001:80"
+        networks:
+            - appnet
+        depends_on:
+            - mysql
+        restart: unless-stopped
+
+    # 8) n8n
+    n8n:
+        image: n8nio/n8n
+        environment:
+            - TZ=Asia/Jakarta
+            - GENERIC_TIMEZONE=Asia/Jakarta
+        ports:
+            - "7002:5678"
+        volumes:
+            - n8n_data:/home/node/.n8n
+        networks:
+            - appnet
+        restart: unless-stopped

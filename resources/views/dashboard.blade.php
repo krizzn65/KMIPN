@@ -4,7 +4,7 @@
     <div class="dashboard-content">
         <!-- Header -->
         <div class="dashboard-header">
-            <h1 class="dashboard-title">AquaMonitor Dashboard</h1>
+            <h1 class="dashboard-title">Wisanggeni</h1>
             <p class="dashboard-subtitle">Real-time water quality monitoring for vaname shrimp ponds</p>
 
             <div class="real-time-indicator">
@@ -109,7 +109,7 @@
 
         <!-- Footer -->
         <div class="dashboard-footer">
-            <p>&copy; 2025 AquaMonitor Water Quality System. Monitoring the health of your water.</p>
+            <p>&copy; 2025 Wisanggeni Water Quality System. Monitoring the health of your water.</p>
         </div>
     </div>
 
@@ -838,11 +838,11 @@
         // Initialize everything
         document.addEventListener('DOMContentLoaded', function() {
             updateTime();
-            setInterval(updateTime, 4000);
+            setInterval(updateTime, 3000);
 
-            // Fetch data immediately and then every 4000 seconds
+            // Fetch data immediately and then every 3000 seconds
             fetchSensorData();
-            setInterval(fetchSensorData, 4000);
+            setInterval(fetchSensorData, 3000);
 
             // Check water quality every 30 seconds
             setInterval(checkWaterQuality, 30000);
